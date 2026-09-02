@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Em Campo | Sistema</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.0/dist/leaflet-geoman.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">G5</div>
+          <div class="brand-text">
+            <strong>EM CAMPO</strong>
+            <span>Gestão agrícola</span>
+          </div>
+        </div>
+
+        <nav class="side-nav" aria-label="Navegação principal">
+          <button class="nav-item active"><span class="nav-icon"></span>Visão geral</button>
+          <button class="nav-item"><span class="nav-icon"></span>Talhões</button>
+          <button class="nav-item"><span class="nav-icon"></span>Monitoramento</button>
+          <button class="nav-item" data-view="analytics"><span class="nav-icon"></span>Analítica</button>
+          <button class="nav-item" data-view="reports"><span class="nav-icon"></span>Relatórios</button>
+          <button class="nav-item"><span class="nav-icon"></span>Configurações</button>
+        </nav>
+
+        <div class="sidebar-card">
+          <span>Safra atual</span>
+          <strong>2026/27</strong>
+          <small>Milho / soja</small>
+        </div>
+
+      </aside>
+
+      <main class="content" id="dashboardContent">
+        <div class="login-overlay" id="loginOverlay" hidden>
+          <div class="login-card">
+            <div class="login-header">
+              <div class="brand-mark small">G5</div>
+              <div>
+                <span class="eyebrow">Acesso ao sistema</span>
+                <h3>Em Campo</h3>
+              </div>
+            </div>
+
+            <form id="loginForm" class="login-form">
+              <label>
+                <span>Usuário</span>
+                <input type="text" id="username" value="admin" placeholder="Digite seu usuário" required />
+              </label>
+
+              <label>
+                <span>Senha</span>
+                <input type="password" id="password" value="123456" placeholder="Digite sua senha" required />
+              </label>
+
+              <button type="submit" class="primary-btn full">Entrar no sistema</button>
+              <button type="button" class="ghost-btn full" id="backToIntroButton">Voltar para apresentação</button>
+              <p id="loginMessage" class="login-message"></p>
+            </form>
+          </div>
+        </div>
+
+        <section class="company-intro" id="companyIntro">
+          <div class="intro-copy">
+            <span class="eyebrow">Tecnologia para decisões no campo</span>
+            <h1>Dados claros para uma operação agrícola mais inteligente.</h1>
+            <p>O Em Campo reúne mapas, imagens aéreas e indicadores de produtividade para transformar a rotina da fazenda em decisões precisas, rastreáveis e simples de acompanhar.</p>
+            <div class="intro-actions">
+              <button class="primary-btn" id="accessButton" type="button">Conhecer o sistema</button>
+              <button class="ghost-btn" id="editorAccessButton" type="button">Entrar no editor de talhão</button>
+            </div>
+          </div>
+
+          <div class="intro-visual">
+            <div class="field-preview">
+              <span class="preview-label">Campo Novo do Parecis, MT · Safra 2026/27</span>
+              <div class="preview-field field-one"></div>
+              <div class="preview-field field-two"></div>
+              <div class="preview-field field-three"></div>
+              <span class="preview-drone">✦</span>
+            </div>
+            <div class="intro-caption"><strong>Visão integrada da fazenda</strong><span>Mapeamento e monitoramento em um só lugar</span></div>
+          </div>
+
+          <div class="intro-stats">
+            <div><strong>12.480 ha</strong><span>área acompanhada</span></div>
+            <div><strong>94,8%</strong><span>disponibilidade dos dados</span></div>
+            <div><strong>38 fazendas</strong><span>em gestão ativa</span></div>
+          </div>
+        </section>
+
+        <div id="dashboardView" hidden>
+
+        <header class="topbar">
+          <div>
+            <span class="crumb">Operações</span>
+            <h2>Fazenda Campo Novo</h2>
+          </div>
+
+          <div class="top-actions">
+            <button class="ghost-btn">Exportar</button>
+            <button class="primary-btn">Nova análise</button>
+          </div>
+        </header>
+
+        <section class="hero-grid">
+          <div class="panel panel-main">
+            <div class="panel-header">
+              <div>
+                <span class="eyebrow">Dashboard operacional</span>
+                <h1>Gestão por talhão</h1>
+              </div>
+              <div class="segmented">
+                <button class="seg-btn active">Semana</button>
+                <button class="seg-btn">Mês</button>
+                <button class="seg-btn">Safra</button>
+              </div>
+            </div>
+
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span>Área monitorada</span>
+                <strong>4.280 ha</strong>
+                <small>+12,4% vs. mês anterior</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Saúde vegetal</span>
+                <strong>86,2%</strong>
+                <small>+5,1 pontos</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Talhões ativos</span>
+                <strong>24</strong>
+                <small>18 em monitoramento</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Última atualização</span>
+                <strong>Agora</strong>
+                <small>dados sincronizados</small>
+              </article>
+            </div>
+          </div>
+
+          <aside class="panel side-panel">
+            <span class="eyebrow">Resumo executivo</span>
+            <h3>Indicadores críticos</h3>
+            <ul>
+              <li>Baixa variabilidade nos talhões do setor norte.</li>
+              <li>Talhão A apresenta melhor índice de vigor do solo.</li>
+              <li>Risco climático reduzido para os próximos 10 dias.</li>
+            </ul>
+          </aside>
+        </section>
+
+        <section class="workspace-grid" id="workspaceGrid">
+          <div class="panel map-panel">
+            <div class="map-toolbar">
+              <div class="toolbar-left">
+                <span class="chip active">Matriz</span>
+                <span class="chip">Talhões</span>
+                <span class="chip">Sensores</span>
+              </div>
+
+              <div class="toolbar-right">
+                <button class="tool-btn" id="zoomInButton" type="button">+ Zoom</button>
+                <button class="tool-btn" id="satelliteButton" type="button">Satélite</button>
+                <button class="tool-btn weather-layer-button active" id="rainLayerButton" type="button">Chuva</button>
+                <button class="tool-btn weather-layer-button" id="windLayerButton" type="button">Ventos</button>
+                <button class="tool-btn edit-toggle" id="editFieldButton" type="button">Editar talhão</button>
+                <button class="tool-btn" id="expandEditorButton" type="button">Expandir editor</button>
+              </div>
+            </div>
+
+            <div class="map-canvas" id="mapCanvas">
+              <div class="real-map" id="realMap" aria-label="Mapa geográfico da fazenda"></div>
+              <div class="map-location-badge"><strong>Localização operacional</strong><span>Campo Novo do Parecis · MT</span><small>Coordenadas do talhão em GPS</small></div>
+              <div class="weather-map-legend" id="weatherMapLegend">
+                <strong>Risco climático</strong>
+                <span><i class="legend-rain"></i> Chuva provável</span>
+                <span><i class="legend-wind"></i> Vento forte</span>
+              </div>
+              <div class="editor-tools" aria-label="Ferramentas do editor">
+                <button class="editor-tool active" type="button" title="Selecionar">↖</button>
+                <button class="editor-tool" id="drawPolygonTool" type="button" title="Desenhar limite">⌁</button>
+                <button class="editor-tool" type="button" title="Adicionar ponto">⊙</button>
+                <span></span>
+                <button class="editor-tool" type="button" title="Medir área">⌗</button>
+              </div>
+              <div class="map-grid"></div>
+
+              <div class="parcel parcel-a selected"><span>Talhão A</span></div>
+              <div class="parcel parcel-b"><span>Talhão B</span></div>
+              <div class="parcel parcel-c"><span>Talhão C</span></div>
+              <div class="parcel parcel-d"><span>Talhão D</span></div>
+
+              <div class="map-marker marker-1"></div>
+              <div class="map-marker marker-2"></div>
+              <div class="map-marker marker-3"></div>
+              <div class="draw-layer" id="drawLayer" aria-label="Área para desenhar o talhão"></div>
+            </div>
+
+            <div class="editor-bar" id="editorBar" hidden>
+              <div>
+                <strong>Editor de talhão</strong>
+                <span id="editorStatus">Clique no mapa para adicionar pontos do limite.</span>
+              </div>
+              <div class="editor-weather" id="editorWeather">
+                <span>Clima agora</span>
+                <strong id="weatherTemperature">--°</strong>
+                <small id="weatherCondition">Consultando...</small>
+                <small><b id="weatherHumidity">--%</b> umid. · <b id="weatherWind">-- km/h</b> vento</small>
+                <small id="weatherForecast">Previsão indisponível</small>
+                <button class="weather-refresh" id="weatherRefreshButton" type="button" title="Atualizar clima">↻</button>
+              </div>
+              <div class="editor-actions">
+                <button class="tool-btn" id="dronePointButton" type="button">Ponto de drone</button>
+                <button class="tool-btn" id="highPointButton" type="button">Área alta (drone)</button>
+                <button class="tool-btn shape-button active" id="squareShapeButton" type="button">Quadrado</button>
+                <button class="tool-btn shape-button" id="hexShapeButton" type="button">Hexágono</button>
+                <button class="ghost-btn dark" id="clearFieldButton" type="button">Limpar</button>
+                <button class="primary-btn" id="exportFieldButton" type="button">Exportar GeoJSON</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel details-panel">
+            <div class="detail-header">
+              <span class="status-label">Talhão selecionado</span>
+              <h3 id="fieldTitle">Talhão A · Milho</h3>
+            </div>
+
+            <div class="field-form">
+              <label>
+                <span>Nome do talhão</span>
+                <input id="fieldNameInput" type="text" value="Talhão A" />
+              </label>
+              <label>
+                <span>Cultura</span>
+                <select id="fieldCultureSelect">
+                  <option>Milho</option>
+                  <option>Soja</option>
+                  <option>Algodão</option>
+                  <option>Trigo</option>
+                  <option>Cana-de-açúcar</option>
+                  <option>Feijão</option>
+                  <option>Outra cultura</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="detail-kpis">
+              <div>
+                <small>Área</small>
+                <strong id="fieldAreaValue">184 ha</strong>
+              </div>
+              <div>
+                <small>Perímetro</small>
+                <strong id="fieldPerimeterValue">7.420 m</strong>
+              </div>
+            </div>
+
+            <div class="metric-list">
+              <div class="metric-item">
+                <span>Umidade</span>
+                <strong>18,3%</strong>
+              </div>
+              <div class="metric-item">
+                <span>Vigor do solo</span>
+                <strong>85%</strong>
+              </div>
+              <div class="metric-item">
+                <span>Centro do talhão</span>
+                <strong id="fieldCenterValue">-13.6589, -57.8907</strong>
+              </div>
+              <div class="metric-item">
+                <span>Atualização</span>
+                <strong id="fieldUpdatedValue">Em tempo real</strong>
+              </div>
+            </div>
+
+            <div class="detail-actions">
+              <button class="primary-btn" id="saveFieldButton" type="button">Salvar alterações</button>
+                <button class="ghost-btn dark">Abrir relatórios</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="insights-panel panel" id="insightsPanel" hidden>
+          <div class="table-head">
+            <div>
+              <span class="eyebrow" id="insightsEyebrow">Dados demonstrativos</span>
+              <h3 id="insightsTitle">Analítica da operação</h3>
+            </div>
+            <button class="ghost-btn dark" id="closeInsightsButton" type="button">Voltar ao mapa</button>
+          </div>
+          <div class="insights-grid" id="insightsGrid"></div>
+          <div class="insights-note" id="insightsNote">Valores aleatórios para apresentação do sistema.</div>
+        </section>
+
+        <section class="bottom-grid">
+          <div class="panel table-panel">
+            <div class="table-head">
+              <h3>Talhões ativos</h3>
+              <button class="ghost-btn dark">Ver tudo</button>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Talhão</th>
+                  <th>Cultura</th>
+                  <th>Área</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>01</td>
+                  <td>Milho</td>
+                  <td>220 ha</td>
+                  <td><span class="tag ok">Normal</span></td>
+                </tr>
+                <tr>
+                  <td>04</td>
+                  <td>Milho</td>
+                  <td>184 ha</td>
+                  <td><span class="tag ok">Normal</span></td>
+                </tr>
+                <tr>
+                  <td>07</td>
+                  <td>Soja</td>
+                  <td>160 ha</td>
+                  <td><span class="tag warning">Atenção</span></td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>Trigo</td>
+                  <td>141 ha</td>
+                  <td><span class="tag ok">Normal</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel chart-panel">
+            <div class="table-head">
+              <h3>Atividade operacional</h3>
+              <span class="eyebrow small">Talhão selecionado</span>
+            </div>
+
+            <div class="line-chart">
+              <div class="bars">
+                <div class="bar-group"><span class="bar" style="height: 42%"></span><label>Seg</label></div>
+                <div class="bar-group"><span class="bar" style="height: 52%"></span><label>Ter</label></div>
+                <div class="bar-group"><span class="bar" style="height: 62%"></span><label>Qua</label></div>
+                <div class="bar-group"><span class="bar" style="height: 74%"></span><label>Qui</label></div>
+                <div class="bar-group"><span class="bar" style="height: 81%"></span><label>Sex</label></div>
+                <div class="bar-group"><span class="bar" style="height: 92%"></span><label>Hoje</label></div>
+              </div>
+            </div>
+          </div>
+        </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.0/dist/leaflet-geoman.min.js"></script>
+    <script src="script.js?v=9"></script>
+  </body>
+</html>

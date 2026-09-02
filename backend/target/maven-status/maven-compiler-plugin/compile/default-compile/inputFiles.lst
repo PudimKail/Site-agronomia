@@ -1,0 +1,16 @@
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\config\JwtAuthenticationFilter.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\config\JwtService.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\config\SecurityConfig.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\config\WebConfig.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\controller\AuthController.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\controller\DashboardController.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\controller\HomeController.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\controller\WeatherController.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\dto\AuthResponse.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\dto\LoginRequest.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\dto\UsuarioResponse.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\model\Usuario.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\repository\UsuarioRepository.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\service\AuthService.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\service\CustomUserDetailsService.java
+C:\Site Agronomia\backend\src\main\java\com\siteagronomia\SiteAgronomiaApplication.java
