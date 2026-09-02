@@ -1,1 +1,16 @@
+com\siteagronomia\service\CustomUserDetailsService.class
+com\siteagronomia\SiteAgronomiaApplication.class
 com\siteagronomia\config\WebConfig.class
+com\siteagronomia\controller\DashboardController.class
+com\siteagronomia\repository\UsuarioRepository.class
+com\siteagronomia\model\Usuario.class
+com\siteagronomia\config\JwtAuthenticationFilter.class
+com\siteagronomia\config\SecurityConfig.class
+com\siteagronomia\service\AuthService.class
+com\siteagronomia\controller\HomeController.class
+com\siteagronomia\controller\WeatherController.class
+com\siteagronomia\dto\UsuarioResponse.class
+com\siteagronomia\dto\LoginRequest.class
+com\siteagronomia\controller\AuthController.class
+com\siteagronomia\config\JwtService.class
+com\siteagronomia\dto\AuthResponse.class

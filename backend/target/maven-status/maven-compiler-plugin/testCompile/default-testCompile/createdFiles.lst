@@ -1,0 +1,4 @@
+com\siteagronomia\controller\ControllerTest.class
+com\siteagronomia\service\CustomUserDetailsServiceTest.class
+com\siteagronomia\config\JwtServiceTest.class
+com\siteagronomia\service\AuthServiceTest.class
