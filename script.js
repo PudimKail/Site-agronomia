@@ -3,6 +3,7 @@ const loginOverlay = document.getElementById('loginOverlay');
 const companyIntro = document.getElementById('companyIntro');
 const dashboardView = document.getElementById('dashboardView');
 const accessButton = document.getElementById('accessButton');
+const finalAccessButton = document.getElementById('finalAccessButton');
 const editorAccessButton = document.getElementById('editorAccessButton');
 const backToIntroButton = document.getElementById('backToIntroButton');
 const loginMessage = document.getElementById('loginMessage');
@@ -16,6 +17,10 @@ const fieldTitle = document.getElementById('fieldTitle');
 const fieldNameInput = document.getElementById('fieldNameInput');
 const fieldCultureSelect = document.getElementById('fieldCultureSelect');
 const saveFieldButton = document.getElementById('saveFieldButton');
+const fieldPlantedQuantity = document.getElementById('fieldPlantedQuantity');
+const fieldPlantedQuantityInput = document.getElementById('fieldPlantedQuantityInput');
+const applyPlantedQuantityButton = document.getElementById('applyPlantedQuantityButton');
+const useAutomaticQuantityButton = document.getElementById('useAutomaticQuantityButton');
 
 const mapCanvas = document.querySelector('.map-canvas');
 const realMapElement = document.getElementById('realMap');
@@ -58,6 +63,12 @@ let standardTiles;
 let satelliteTiles;
 let rainRiskLayer;
 let windRiskLayer;
+let currentFieldAreaHectares = 184;
+const savedManualPlantedQuantity = localStorage.getItem('manualPlantedQuantity');
+let manualPlantedQuantity = savedManualPlantedQuantity === null ? null : Number(savedManualPlantedQuantity);
+const apiBaseUrl = window.location.port === '5500'
+  ? `${window.location.protocol}//${window.location.hostname}:8080`
+  : '';
 
 const weatherLabels = {
   0: 'Céu limpo', 1: 'Parcialmente limpo', 2: 'Nublado', 3: 'Encoberto',
@@ -66,11 +77,37 @@ const weatherLabels = {
   81: 'Pancadas moderadas', 82: 'Pancadas fortes', 95: 'Trovoada'
 };
 
+const plantingDensityByCulture = {
+  Milho: 60000,
+  Soja: 300000,
+  Algodão: 100000,
+  Trigo: 300,
+  'Cana-de-açúcar': 12000,
+  Feijão: 200000,
+  'Outra cultura': 1
+};
+
+function updatePlantedQuantity(areaHectares) {
+  if (!fieldPlantedQuantity || !fieldCultureSelect) return;
+  const density = plantingDensityByCulture[fieldCultureSelect.value] || 1;
+  const quantity = manualPlantedQuantity ?? Math.round(areaHectares * density);
+  fieldPlantedQuantity.textContent = `${quantity.toLocaleString('pt-BR')} plantas`;
+  if (fieldPlantedQuantityInput && document.activeElement !== fieldPlantedQuantityInput) {
+    fieldPlantedQuantityInput.value = manualPlantedQuantity ?? '';
+  }
+}
+
+function handleFieldGeometryChange() {
+  manualPlantedQuantity = null;
+  localStorage.removeItem('manualPlantedQuantity');
+  updateFieldMeasurements();
+}
+
 async function loadWeather() {
   if (!weatherTemperature) return;
   weatherCondition.textContent = 'Consultando...';
   try {
-    const response = await fetch('/api/weather');
+    const response = await fetch(`${apiBaseUrl}/api/weather`);
     if (!response.ok) throw new Error('Weather API indisponível');
     const data = await response.json();
     weatherTemperature.textContent = `${Math.round(data.current.temperature_2m)}°C`;
@@ -135,9 +172,11 @@ function updateFieldMeasurements() {
   if (!fieldPolygon || !fieldAreaValue) return;
   const points = fieldPolygon.getLatLngs()[0] || [];
   if (points.length < 3) {
+    currentFieldAreaHectares = 0;
     fieldAreaValue.textContent = '0 ha';
     fieldPerimeterValue.textContent = '0 m';
     fieldCenterValue.textContent = 'Sem limite';
+    updatePlantedQuantity(currentFieldAreaHectares);
     return;
   }
 
@@ -155,7 +194,9 @@ function updateFieldMeasurements() {
     perimeter += distanceInMeters(points[index], points[(index + 1) % points.length]);
   });
   const center = fieldPolygon.getBounds().getCenter();
-  fieldAreaValue.textContent = `${(Math.abs(area) / 2 / 10000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ha`;
+  currentFieldAreaHectares = Math.abs(area) / 2 / 10000;
+  fieldAreaValue.textContent = `${currentFieldAreaHectares.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ha`;
+  updatePlantedQuantity(currentFieldAreaHectares);
   fieldPerimeterValue.textContent = `${Math.round(perimeter).toLocaleString('pt-BR')} m`;
   fieldCenterValue.textContent = `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
   fieldUpdatedValue.textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
@@ -166,6 +207,7 @@ function updateFieldMetadata() {
   const culture = fieldCultureSelect.value;
   fieldTitle.textContent = `${fieldName} · ${culture}`;
   if (fieldPolygon) fieldPolygon.setTooltipContent(`${fieldName} · ${culture}`);
+  updatePlantedQuantity(currentFieldAreaHectares);
 }
 
 function showIntro() {
@@ -194,7 +236,7 @@ async function autenticarUsuario(username, password) {
   let response;
 
   try {
-    response = await fetch('/api/auth/login', {
+    response = await fetch(`${apiBaseUrl}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -246,6 +288,7 @@ if (loginForm) {
 
 showIntro();
 if (accessButton) accessButton.addEventListener('click', showLogin);
+if (finalAccessButton) finalAccessButton.addEventListener('click', showLogin);
 if (editorAccessButton) editorAccessButton.addEventListener('click', () => {
   openEditorAfterLogin = true;
   showLogin();
@@ -271,14 +314,28 @@ function initializeRealMap() {
   ], { color: '#123d35', weight: 3, fillColor: '#78ad55', fillOpacity: 0.48 }).addTo(realMap);
   fieldPolygon.bindTooltip('Talhão A · Milho', { permanent: true, direction: 'center', className: 'field-tooltip' });
   realMap.fitBounds(fieldPolygon.getBounds(), { padding: [35, 35] });
-  fieldPolygon.on('pm:edit', () => {
+  fieldPolygon.on('pm:edit pm:update pm:dragend', () => {
     editorStatus.textContent = 'Limite atualizado. Arraste os vértices para ajustar o talhão.';
-    updateFieldMeasurements();
+    handleFieldGeometryChange();
   });
   updateFieldMeasurements();
 }
 
 initializeRealMap();
+
+const revealItems = document.querySelectorAll('[data-reveal]');
+if ('IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.16 });
+  revealItems.forEach((item) => revealObserver.observe(item));
+} else {
+  revealItems.forEach((item) => item.classList.add('is-visible'));
+}
 
 const savedField = JSON.parse(localStorage.getItem('fieldMetadata') || 'null');
 if (savedField) {
@@ -290,6 +347,25 @@ if (savedField) {
 if (fieldNameInput && fieldCultureSelect) {
   fieldNameInput.addEventListener('input', updateFieldMetadata);
   fieldCultureSelect.addEventListener('change', updateFieldMetadata);
+}
+
+if (applyPlantedQuantityButton && fieldPlantedQuantityInput) {
+  applyPlantedQuantityButton.addEventListener('click', () => {
+    const quantity = Number(fieldPlantedQuantityInput.value);
+    if (!Number.isFinite(quantity) || quantity < 0) return;
+    manualPlantedQuantity = Math.round(quantity);
+    localStorage.setItem('manualPlantedQuantity', manualPlantedQuantity);
+    updatePlantedQuantity(currentFieldAreaHectares);
+    fieldUpdatedValue.textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  });
+}
+
+if (useAutomaticQuantityButton) {
+  useAutomaticQuantityButton.addEventListener('click', () => {
+    manualPlantedQuantity = null;
+    localStorage.removeItem('manualPlantedQuantity');
+    updatePlantedQuantity(currentFieldAreaHectares);
+  });
 }
 
 if (saveFieldButton) {
@@ -325,9 +401,9 @@ if (realMap) realMap.on('pm:create', (event) => {
   fieldPolygon.setStyle({ color: '#123d35', weight: 3, fillColor: '#78ad55', fillOpacity: 0.48 });
   fieldPolygon.bindTooltip('Novo talhão', { permanent: true, direction: 'center', className: 'field-tooltip' });
   fieldPolygon.pm.enable({ allowSelfIntersection: false, draggable: true });
-  fieldPolygon.on('pm:edit', () => {
+  fieldPolygon.on('pm:edit pm:update pm:dragend', () => {
     editorStatus.textContent = 'Limite atualizado.';
-    updateFieldMeasurements();
+    handleFieldGeometryChange();
   });
   updateFieldMeasurements();
   drawPolygonTool.classList.remove('active');
@@ -490,7 +566,6 @@ function openInsights(view) {
   const cards = view === 'analytics'
     ? [
         ['Cobertura monitorada', `${randomBetween(82, 98)}%`, 'sensores e imagens válidas'],
-        ['Vigor médio', `${randomBetween(76, 94)}%`, 'índice estimado da safra'],
         ['Umidade média', `${randomBetween(16, 24, 1)}%`, 'leitura dos talhões'],
         ['Alertas ativos', `${randomBetween(2, 9)}`, 'pontos para revisar']
       ]
