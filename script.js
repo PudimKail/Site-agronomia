@@ -50,6 +50,31 @@ const insightsTitle = document.getElementById('insightsTitle');
 const insightsEyebrow = document.getElementById('insightsEyebrow');
 const insightsNote = document.getElementById('insightsNote');
 const closeInsightsButton = document.getElementById('closeInsightsButton');
+const map2dButton = document.getElementById('map2dButton');
+const map3dButton = document.getElementById('map3dButton');
+const layersButton = document.getElementById('layersButton');
+const layerPanel = document.getElementById('layerPanel');
+const closeLayersButton = document.getElementById('closeLayersButton');
+const fitSelectionButton = document.getElementById('fitSelectionButton');
+const editVerticesTool = document.getElementById('editVerticesTool');
+const moveFieldTool = document.getElementById('moveFieldTool');
+const measureTool = document.getElementById('measureTool');
+const mapSelectionHint = document.getElementById('mapSelectionHint');
+const weatherMapLegend = document.getElementById('weatherMapLegend');
+const undoButton = document.getElementById('undoButton');
+const redoButton = document.getElementById('redoButton');
+const unsavedStatus = document.getElementById('unsavedStatus');
+const fieldVertexCount = document.getElementById('fieldVertexCount');
+const geometryAreaValue = document.getElementById('geometryAreaValue');
+const geometryPerimeterValue = document.getElementById('geometryPerimeterValue');
+const geometryCenterValue = document.getElementById('geometryCenterValue');
+const flightPlannerButton = document.getElementById('flightPlannerButton');
+const generateFlightButton = document.getElementById('generateFlightButton');
+const flightAltitudeInput = document.getElementById('flightAltitudeInput');
+const flightSpeedInput = document.getElementById('flightSpeedInput');
+const flightSpacingInput = document.getElementById('flightSpacingInput');
+const flightDirectionInput = document.getElementById('flightDirectionInput');
+const flightSummary = document.getElementById('flightSummary');
 
 let openEditorAfterLogin = false;
 let realMap;
@@ -63,6 +88,13 @@ let standardTiles;
 let satelliteTiles;
 let rainRiskLayer;
 let windRiskLayer;
+let flightRouteLayer;
+let measureLayer;
+let measurePoints = [];
+let activeEditorTool = 'select';
+let fieldHistory = [];
+let fieldFuture = [];
+let isRestoringHistory = false;
 let currentFieldAreaHectares = 184;
 const savedManualPlantedQuantity = localStorage.getItem('manualPlantedQuantity');
 let manualPlantedQuantity = savedManualPlantedQuantity === null ? null : Number(savedManualPlantedQuantity);
@@ -176,6 +208,10 @@ function updateFieldMeasurements() {
     fieldAreaValue.textContent = '0 ha';
     fieldPerimeterValue.textContent = '0 m';
     fieldCenterValue.textContent = 'Sem limite';
+    if (fieldVertexCount) fieldVertexCount.textContent = points.length;
+    if (geometryAreaValue) geometryAreaValue.textContent = '0 ha';
+    if (geometryPerimeterValue) geometryPerimeterValue.textContent = '0 m';
+    if (geometryCenterValue) geometryCenterValue.textContent = 'Sem limite';
     updatePlantedQuantity(currentFieldAreaHectares);
     return;
   }
@@ -199,6 +235,10 @@ function updateFieldMeasurements() {
   updatePlantedQuantity(currentFieldAreaHectares);
   fieldPerimeterValue.textContent = `${Math.round(perimeter).toLocaleString('pt-BR')} m`;
   fieldCenterValue.textContent = `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
+  if (fieldVertexCount) fieldVertexCount.textContent = points.length;
+  if (geometryAreaValue) geometryAreaValue.textContent = `${currentFieldAreaHectares.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ha`;
+  if (geometryPerimeterValue) geometryPerimeterValue.textContent = `${Math.round(perimeter).toLocaleString('pt-BR')} m`;
+  if (geometryCenterValue) geometryCenterValue.textContent = `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
   fieldUpdatedValue.textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
@@ -211,18 +251,21 @@ function updateFieldMetadata() {
 }
 
 function showIntro() {
+  document.body.classList.remove('dashboard-mode');
   companyIntro.hidden = false;
   dashboardView.hidden = true;
   loginOverlay.hidden = true;
 }
 
 function showLogin() {
+  document.body.classList.remove('dashboard-mode');
   companyIntro.hidden = true;
   dashboardView.hidden = true;
   loginOverlay.hidden = false;
 }
 
 function showDashboard() {
+  document.body.classList.add('dashboard-mode');
   companyIntro.hidden = true;
   dashboardView.hidden = false;
   loginOverlay.hidden = true;
@@ -295,6 +338,32 @@ if (editorAccessButton) editorAccessButton.addEventListener('click', () => {
 });
 if (backToIntroButton) backToIntroButton.addEventListener('click', showIntro);
 
+const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+const mainNav = document.querySelector('.main-nav');
+if (mobileMenuToggle && mainNav) {
+  mobileMenuToggle.addEventListener('click', () => {
+    mainNav.classList.toggle('is-open');
+    mobileMenuToggle.classList.toggle('is-open');
+  });
+
+  mainNav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      mainNav.classList.remove('is-open');
+      mobileMenuToggle.classList.remove('is-open');
+    });
+  });
+}
+
+const diagnosticForm = document.getElementById('diagnosticForm');
+const successMessage = document.getElementById('successMessage');
+if (diagnosticForm && successMessage) {
+  diagnosticForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    successMessage.classList.add('visible');
+    diagnosticForm.reset();
+  });
+}
+
 function initializeRealMap() {
   if (!window.L || !realMapElement) return;
   mapCanvas.classList.add('real-mode');
@@ -335,6 +404,21 @@ if ('IntersectionObserver' in window) {
   revealItems.forEach((item) => revealObserver.observe(item));
 } else {
   revealItems.forEach((item) => item.classList.add('is-visible'));
+}
+
+const contactSection = document.querySelector('.contact-section');
+if (contactSection) {
+  const showContactSection = () => contactSection.classList.add('is-visible');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+    showContactSection();
+  } else {
+    const contactObserver = new IntersectionObserver((entries, observer) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      showContactSection();
+      observer.disconnect();
+    }, { threshold: 0.12 });
+    contactObserver.observe(contactSection);
+  }
 }
 
 const savedField = JSON.parse(localStorage.getItem('fieldMetadata') || 'null');
@@ -586,4 +670,382 @@ if (closeInsightsButton) closeInsightsButton.addEventListener('click', () => {
   insightsPanel.hidden = true;
   workspaceGrid.hidden = false;
   if (realMap) window.requestAnimationFrame(() => realMap.invalidateSize());
+});
+
+const teamCarousel = document.querySelector('[data-team-carousel]');
+if (teamCarousel) {
+  const teamSlides = Array.from(teamCarousel.querySelectorAll('.team-slide'));
+  const teamIndicators = Array.from(document.querySelectorAll('.team-indicator'));
+  const previousTeamButton = teamCarousel.querySelector('.team-control-prev');
+  const nextTeamButton = teamCarousel.querySelector('.team-control-next');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activeTeamSlide = 0;
+  let teamTimer;
+
+  function showTeamSlide(index) {
+    activeTeamSlide = (index + teamSlides.length) % teamSlides.length;
+    teamSlides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === activeTeamSlide));
+    teamIndicators.forEach((indicator, indicatorIndex) => {
+      const isActive = indicatorIndex === activeTeamSlide;
+      indicator.classList.toggle('is-active', isActive);
+      indicator.toggleAttribute('aria-current', isActive);
+    });
+  }
+
+  function restartTeamTimer() {
+    window.clearInterval(teamTimer);
+    teamTimer = window.setInterval(() => showTeamSlide(activeTeamSlide + 1), reducedMotion.matches ? 5000 : 4500);
+  }
+
+  function pauseTeamTimer() {
+    window.clearInterval(teamTimer);
+  }
+
+  teamIndicators.forEach((indicator, index) => indicator.addEventListener('click', () => {
+    showTeamSlide(index);
+    restartTeamTimer();
+  }));
+  if (previousTeamButton) previousTeamButton.addEventListener('click', () => {
+    showTeamSlide(activeTeamSlide - 1);
+    restartTeamTimer();
+  });
+  if (nextTeamButton) nextTeamButton.addEventListener('click', () => {
+    showTeamSlide(activeTeamSlide + 1);
+    restartTeamTimer();
+  });
+
+  teamCarousel.addEventListener('mouseenter', pauseTeamTimer);
+  teamCarousel.addEventListener('mouseleave', restartTeamTimer);
+  teamCarousel.addEventListener('focusin', pauseTeamTimer);
+  teamCarousel.addEventListener('focusout', (event) => {
+    if (!teamCarousel.contains(event.relatedTarget)) restartTeamTimer();
+  });
+  teamCarousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      showTeamSlide(activeTeamSlide - 1);
+      restartTeamTimer();
+    }
+    if (event.key === 'ArrowRight') {
+      showTeamSlide(activeTeamSlide + 1);
+      restartTeamTimer();
+    }
+  });
+
+  showTeamSlide(0);
+  restartTeamTimer();
+}
+
+function fieldSnapshot() {
+  if (!fieldPolygon) return [];
+  return (fieldPolygon.getLatLngs()[0] || []).map((point) => [point.lat, point.lng]);
+}
+
+function sameSnapshot(first, second) {
+  return JSON.stringify(first) === JSON.stringify(second);
+}
+
+function updateHistoryButtons() {
+  if (undoButton) undoButton.disabled = fieldHistory.length === 0;
+  if (redoButton) redoButton.disabled = fieldFuture.length === 0;
+}
+
+function markFieldChanged() {
+  if (unsavedStatus) unsavedStatus.hidden = false;
+}
+
+let lastFieldSnapshot = fieldSnapshot();
+
+function recordFieldChange() {
+  const currentSnapshot = fieldSnapshot();
+  if (isRestoringHistory || sameSnapshot(currentSnapshot, lastFieldSnapshot)) return;
+  fieldHistory.push(lastFieldSnapshot);
+  fieldFuture = [];
+  lastFieldSnapshot = currentSnapshot;
+  markFieldChanged();
+  updateHistoryButtons();
+}
+
+function restoreFieldSnapshot(snapshot) {
+  if (!fieldPolygon || snapshot.length < 3) return;
+  isRestoringHistory = true;
+  fieldPolygon.setLatLngs([snapshot]);
+  updateFieldMeasurements();
+  lastFieldSnapshot = snapshot;
+  isRestoringHistory = false;
+  markFieldChanged();
+  updateHistoryButtons();
+}
+
+function setEditorTool(tool) {
+  activeEditorTool = tool;
+  document.querySelectorAll('[data-editor-tool]').forEach((button) => {
+    button.classList.toggle('active', button.dataset.editorTool === tool);
+  });
+  if (!fieldPolygon || !realMap) return;
+  if (tool !== 'draw' && realMap.pm && realMap.pm.disableDraw) realMap.pm.disableDraw();
+  if (fieldPolygon.pm) fieldPolygon.pm.disable();
+  editorBar.hidden = false;
+  if (tool === 'select') editorStatus.textContent = 'Modo seleção ativo. Clique no perímetro para consultar o talhão.';
+  if (tool === 'vertices') {
+    fieldPolygon.pm.enable({ allowSelfIntersection: false, allowRemovalOfVertices: true, draggable: false });
+    editorStatus.textContent = 'Modo vértices ativo. Arraste ou remova pontos do perímetro.';
+  }
+  if (tool === 'move') {
+    fieldPolygon.pm.enable({ allowSelfIntersection: false, allowRemovalOfVertices: false, draggable: true });
+    editorStatus.textContent = 'Modo mover ativo. Arraste o perímetro inteiro.';
+  }
+  if (tool === 'measure') editorStatus.textContent = 'Clique em dois pontos do mapa para medir a distância.';
+  if (tool === 'draw') {
+    realMap.pm.enableDraw('Polygon', { allowSelfIntersection: false });
+    editorStatus.textContent = 'Desenho ativo. Clique no mapa para criar o novo perímetro.';
+  }
+  if (mapSelectionHint) mapSelectionHint.textContent = editorStatus.textContent;
+}
+
+function showDetailTab(tabName) {
+  document.querySelectorAll('[data-detail-tab]').forEach((tab) => {
+    const active = tab.dataset.detailTab === tabName;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  document.querySelectorAll('[data-detail-panel]').forEach((panel) => {
+    panel.hidden = panel.dataset.detailPanel !== tabName;
+    panel.classList.toggle('active', panel.dataset.detailPanel === tabName);
+  });
+}
+
+document.querySelectorAll('[data-detail-tab]').forEach((tab) => {
+  tab.addEventListener('click', () => showDetailTab(tab.dataset.detailTab));
+});
+
+if (editVerticesTool) editVerticesTool.addEventListener('click', () => setEditorTool('vertices'));
+if (moveFieldTool) moveFieldTool.addEventListener('click', () => setEditorTool('move'));
+if (measureTool) measureTool.addEventListener('click', () => {
+  measurePoints = [];
+  if (measureLayer) measureLayer.remove();
+  setEditorTool('measure');
+});
+if (drawPolygonTool) drawPolygonTool.addEventListener('click', () => setEditorTool('draw'));
+
+if (fitSelectionButton) fitSelectionButton.addEventListener('click', () => {
+  if (!realMap || !fieldPolygon) return;
+  realMap.fitBounds(fieldPolygon.getBounds(), { padding: [35, 35] });
+  editorStatus.textContent = 'Mapa ajustado ao talhão selecionado.';
+});
+
+if (layersButton && layerPanel) layersButton.addEventListener('click', () => {
+  layerPanel.hidden = !layerPanel.hidden;
+  layersButton.setAttribute('aria-expanded', String(!layerPanel.hidden));
+});
+if (closeLayersButton && layerPanel) closeLayersButton.addEventListener('click', () => {
+  layerPanel.hidden = true;
+  layersButton.setAttribute('aria-expanded', 'false');
+});
+
+function toggleLayer(layerName, visible) {
+  if (!realMap) return;
+  if (layerName === 'fields' && fieldPolygon) {
+    if (visible) fieldPolygon.addTo(realMap); else fieldPolygon.remove();
+  }
+  if (layerName === 'satellite' && satelliteTiles) {
+    if (visible) satelliteTiles.addTo(realMap); else realMap.removeLayer(satelliteTiles);
+  }
+  if (layerName === 'base' && standardTiles) {
+    if (visible) standardTiles.addTo(realMap); else realMap.removeLayer(standardTiles);
+  }
+  if (layerName === 'routes' && flightRouteLayer) {
+    if (visible) flightRouteLayer.addTo(realMap); else flightRouteLayer.remove();
+  }
+  if (layerName === 'points') {
+    if (droneMarker) {
+      if (visible) droneMarker.addTo(realMap); else droneMarker.remove();
+    }
+    highAreaLayers.forEach((area) => { if (visible) area.addTo(realMap); else area.remove(); });
+  }
+  if (layerName === 'rain' && rainRiskLayer) {
+    if (visible) rainRiskLayer.addTo(realMap); else rainRiskLayer.remove();
+  }
+  if (layerName === 'wind' && windRiskLayer) {
+    if (visible) windRiskLayer.addTo(realMap); else windRiskLayer.remove();
+  }
+  if (layerName === 'risk' && weatherMapLegend) weatherMapLegend.hidden = !visible;
+  if (layerName === 'sensors') editorStatus.textContent = 'Camada de sensores pronta para receber dados da operação.';
+}
+
+document.querySelectorAll('[data-layer]').forEach((toggle) => {
+  toggle.addEventListener('change', () => toggleLayer(toggle.dataset.layer, toggle.checked));
+});
+
+if (map2dButton) map2dButton.addEventListener('click', () => {
+  map2dButton.classList.add('active');
+  map2dButton.setAttribute('aria-pressed', 'true');
+  editorStatus.textContent = 'Modo 2D ativo. Edição geográfica disponível.';
+});
+if (map3dButton) map3dButton.addEventListener('click', () => {
+  editorStatus.textContent = 'Modo 3D indisponível: configure uma fonte real de elevação para ativá-lo.';
+});
+
+if (undoButton) undoButton.addEventListener('click', () => {
+  const previous = fieldHistory.pop();
+  if (!previous) return;
+  fieldFuture.push(fieldSnapshot());
+  restoreFieldSnapshot(previous);
+  editorStatus.textContent = 'Última alteração desfeita.';
+});
+
+if (redoButton) redoButton.addEventListener('click', () => {
+  const next = fieldFuture.pop();
+  if (!next) return;
+  fieldHistory.push(fieldSnapshot());
+  restoreFieldSnapshot(next);
+  editorStatus.textContent = 'Alteração refeita.';
+});
+
+function pointInsidePolygon(point, polygonPoints) {
+  let inside = false;
+  for (let index = 0, previous = polygonPoints.length - 1; index < polygonPoints.length; previous = index += 1) {
+    const currentPoint = polygonPoints[index];
+    const previousPoint = polygonPoints[previous];
+    const intersects = ((currentPoint.lat > point.lat) !== (previousPoint.lat > point.lat))
+      && point.lng < ((previousPoint.lng - currentPoint.lng) * (point.lat - currentPoint.lat)
+        / (previousPoint.lat - currentPoint.lat)) + currentPoint.lng;
+    if (intersects) inside = !inside;
+  }
+  return inside;
+}
+
+function generateFlightRoute() {
+  if (!realMap || !fieldPolygon || !flightRouteLayer) return;
+  const polygonPoints = fieldPolygon.getLatLngs()[0] || [];
+  if (polygonPoints.length < 3) {
+    flightSummary.textContent = 'Crie um perímetro com pelo menos três vértices antes de gerar a rota.';
+    return;
+  }
+  const spacing = Number(flightSpacingInput.value);
+  const speed = Number(flightSpeedInput.value);
+  const altitude = Number(flightAltitudeInput.value);
+  const direction = Number(flightDirectionInput.value) % 180;
+  if (![spacing, speed, altitude].every((value) => Number.isFinite(value) && value > 0)) {
+    flightSummary.textContent = 'Informe altitude, velocidade e espaçamento válidos.';
+    return;
+  }
+
+  flightRouteLayer.clearLayers();
+  const bounds = fieldPolygon.getBounds();
+  const routeLines = [];
+  const horizontal = direction < 45 || direction > 135;
+  const minimum = horizontal ? bounds.getSouth() : bounds.getWest();
+  const maximum = horizontal ? bounds.getNorth() : bounds.getEast();
+  const step = spacing / 111320;
+  const samples = 80;
+  for (let offset = minimum; offset <= maximum; offset += step) {
+    const linePoints = [];
+    for (let sample = 0; sample <= samples; sample += 1) {
+      const ratio = sample / samples;
+      const point = horizontal
+        ? L.latLng(offset, bounds.getWest() + (bounds.getEast() - bounds.getWest()) * ratio)
+        : L.latLng(bounds.getSouth() + (bounds.getNorth() - bounds.getSouth()) * ratio, offset);
+      if (pointInsidePolygon(point, polygonPoints)) linePoints.push(point);
+    }
+    if (linePoints.length > 1) routeLines.push(linePoints);
+  }
+
+  let distance = 0;
+  routeLines.forEach((line, index) => {
+    for (let pointIndex = 1; pointIndex < line.length; pointIndex += 1) distance += distanceInMeters(line[pointIndex - 1], line[pointIndex]);
+    const orderedLine = index % 2 ? line.slice().reverse() : line;
+    L.polyline(orderedLine, { color: '#d48b2a', weight: 2, opacity: 0.85, dashArray: '6 5' }).addTo(flightRouteLayer);
+  });
+  if (routeLines.length) {
+    const firstLine = routeLines[0];
+    const lastLine = routeLines[routeLines.length - 1];
+    L.circleMarker(firstLine[0], { radius: 5, color: '#123d35', fillColor: '#b9df6d', fillOpacity: 1 }).bindTooltip('Início da rota').addTo(flightRouteLayer);
+    L.circleMarker(lastLine[lastLine.length - 1], { radius: 5, color: '#123d35', fillColor: '#d48b2a', fillOpacity: 1 }).bindTooltip('Final da rota').addTo(flightRouteLayer);
+  }
+  const estimatedMinutes = distance / speed / 60;
+  flightSummary.textContent = `${routeLines.length} linhas · ${(distance / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} km · ${currentFieldAreaHectares.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ha cobertos · ${estimatedMinutes.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} min estimados · altitude ${altitude} m`;
+  editorStatus.textContent = 'Rota de cobertura gerada dentro do perímetro selecionado.';
+  markFieldChanged();
+}
+
+if (flightPlannerButton) flightPlannerButton.addEventListener('click', () => {
+  showDetailTab('drone');
+  editorBar.hidden = false;
+  editorStatus.textContent = 'Planejamento de voo ativo. Configure os parâmetros no painel Drone.';
+});
+
+if (generateFlightButton) generateFlightButton.addEventListener('click', () => {
+  if (!flightRouteLayer && realMap) flightRouteLayer = L.layerGroup().addTo(realMap);
+  generateFlightRoute();
+});
+
+if (realMap) {
+  flightRouteLayer = L.layerGroup().addTo(realMap);
+  fieldPolygon.on('click', () => {
+    setEditorTool('select');
+    mapSelectionHint.textContent = 'Talhão A selecionado';
+    fieldPolygon.setStyle({ color: '#0e2f2b', weight: 4, fillColor: '#78ad55', fillOpacity: 0.48 });
+  });
+  realMap.on('click', (event) => {
+    if (activeEditorTool !== 'measure') return;
+    measurePoints.push(event.latlng);
+    if (measurePoints.length === 1) {
+      measureLayer = L.layerGroup([L.circleMarker(event.latlng, { radius: 4, color: '#d48b2a', fillColor: '#d48b2a', fillOpacity: 1 })]).addTo(realMap);
+      editorStatus.textContent = 'Segundo ponto: clique novamente para concluir a medição.';
+      return;
+    }
+    const distance = distanceInMeters(measurePoints[0], measurePoints[1]);
+    measureLayer.addLayer(L.polyline(measurePoints, { color: '#d48b2a', weight: 3, dashArray: '5 5' }));
+    measureLayer.addLayer(L.circleMarker(measurePoints[1], { radius: 4, color: '#d48b2a', fillColor: '#d48b2a', fillOpacity: 1 }));
+    editorStatus.textContent = `Distância medida: ${distance.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} m.`;
+    setEditorTool('select');
+  });
+  realMap.on('pm:edit pm:update pm:dragend', () => {
+    recordFieldChange();
+    updateFieldMeasurements();
+  });
+  realMap.on('pm:create', () => {
+    lastFieldSnapshot = fieldSnapshot();
+    fieldHistory = [];
+    fieldFuture = [];
+    updateHistoryButtons();
+    markFieldChanged();
+    if (fieldPolygon) {
+      fieldPolygon.on('click', () => {
+        setEditorTool('select');
+        mapSelectionHint.textContent = 'Novo talhão selecionado';
+        fieldPolygon.setStyle({ color: '#0e2f2b', weight: 4, fillColor: '#78ad55', fillOpacity: 0.48 });
+      });
+    }
+  });
+}
+
+if (fieldNameInput) fieldNameInput.addEventListener('input', markFieldChanged);
+if (fieldCultureSelect) fieldCultureSelect.addEventListener('change', markFieldChanged);
+if (saveFieldButton) saveFieldButton.addEventListener('click', () => {
+  if (unsavedStatus) unsavedStatus.hidden = true;
+  fieldHistory = [];
+  fieldFuture = [];
+  lastFieldSnapshot = fieldSnapshot();
+  updateHistoryButtons();
+  editorStatus.textContent = 'Alterações do talhão salvas nesta estação de trabalho.';
+});
+
+document.addEventListener('keydown', (event) => {
+  const target = event.target;
+  const typing = target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement;
+  if (typing && event.key !== 'Escape') return;
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+    event.preventDefault();
+    if (event.shiftKey) redoButton.click(); else undoButton.click();
+    return;
+  }
+  if (event.key === 'Escape') {
+    if (realMap && realMap.pm) realMap.pm.disableDraw();
+    setEditorTool('select');
+    return;
+  }
+  if (event.key === 'v' || event.key === 'V') setEditorTool('select');
+  if (event.key === 'p' || event.key === 'P') setEditorTool('draw');
+  if (event.key === 'm' || event.key === 'M') measureTool.click();
 });

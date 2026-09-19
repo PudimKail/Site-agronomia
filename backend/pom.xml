@@ -16,7 +16,9 @@
     <description>Sistema de login e dashboard agronômico</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <lombok.version>1.18.40</lombok.version>
         <byte-buddy.version>1.18.13-jdk5</byte-buddy.version>
         <postgresql.version>42.7.12</postgresql.version>
