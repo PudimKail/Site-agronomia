@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>G5 em Campo | Tecnologia que transforma informação em decisão</title>
+    <meta name="description" content="Drone, geotecnologia e agronomia para transformar informações do campo em decisões mais precisas para o produtor rural." />
+    <meta name="theme-color" content="#0a2c22" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/base.css?v=7" />
+    <link rel="stylesheet" href="css/landing.css?v=7" />
+  </head>
+  <body class="landing">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a class="brand" href="#inicio" aria-label="G5 em Campo, início">
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <rect width="48" height="48" rx="13" fill="#164b3a" />
+            <path d="M17.5 11.5h13M20 11.5l1.6 2.6h4.8l1.6-2.6" fill="none" stroke="#eef4ea" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="24" y="32" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="18" style="font-stretch: 125%"><tspan fill="#eef4ea">G</tspan><tspan fill="#c3e36b">5</tspan></text>
+            <path d="M11 39.5c4.5-3.4 21.5-3.4 26 0M15 42.5c3.4-2 14.6-2 18 0" fill="none" stroke="#c3e36b" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <span class="brand-name"><strong>G5 em Campo</strong><span>Gestão agrícola</span></span>
+        </a>
+
+        <nav class="main-nav" id="mainNav" aria-label="Seções do site">
+          <a href="#sobre">Sobre</a>
+          <a href="#servicos">Serviços</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#demonstracao">Demonstração</a>
+          <a href="#equipe">Equipe</a>
+          <a href="#contato">Contato</a>
+          <a class="nav-panel-link" href="app.html">Abrir painel</a>
+        </nav>
+
+        <div class="header-actions">
+          <a class="header-link" href="app.html">Painel</a>
+          <a class="btn btn-lime btn-small" href="#diagnostico">Solicitar diagnóstico</a>
+          <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav">
+            <span class="visually-hidden">Abrir menu</span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="hero" id="inicio" aria-labelledby="heroTitle">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <h1 id="heroTitle" class="hero-title" data-split>Tecnologia que transforma informação em decisão.</h1>
+            <p class="hero-lead" data-hero-fade>
+              Mapeamos a lavoura com drone, cruzamos as imagens com geotecnologia e entregamos uma leitura agronômica clara: onde está tudo bem e onde é preciso agir.
+            </p>
+            <div class="hero-actions" data-hero-fade>
+              <a class="btn btn-lime" href="#diagnostico">Solicitar diagnóstico</a>
+              <a class="btn btn-outline-light" href="app.html#talhoes">Abrir editor de talhão</a>
+            </div>
+            <p class="hero-disciplines" data-hero-fade>Drone, geotecnologia e agronomia na mesma equipe.</p>
+          </div>
+
+          <figure class="scene" id="heroScene" aria-label="Animação: drone sobrevoa a lavoura em faixas e revela o mapa de vigor das plantas">
+            <div class="scene-frame">
+              <svg class="scene-svg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid slice" role="presentation"></svg>
+              <div class="scene-hud scene-hud-top">
+                <span class="scene-state" id="sceneState"><i aria-hidden="true"></i><span>Preparando voo</span></span>
+                <span class="scene-coords num" id="sceneCoords">13°40′29″S 57°49′24″O</span>
+              </div>
+            </div>
+            <figcaption class="scene-readout">
+              <div>
+                <strong class="num" id="readArea">125 ha</strong>
+                <span>área mapeada</span>
+              </div>
+              <div>
+                <strong class="num" id="readPoints">8</strong>
+                <span>pontos de atenção</span>
+              </div>
+              <div>
+                <strong class="num" id="readPrecision">96%</strong>
+                <span>precisão na análise</span>
+              </div>
+              <div class="ndvi-legend" aria-label="Escala de vigor: de baixo, em vermelho, a alto, em verde">
+                <span class="ndvi-bar" aria-hidden="true"></span>
+                <span class="ndvi-ends"><span>vigor baixo</span><span>alto</span></span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section about" id="sobre" aria-labelledby="sobreTitle">
+        <div class="container about-grid">
+          <div class="about-copy">
+            <h2 id="sobreTitle">Tecnologia a serviço do campo</h2>
+            <p>
+              A G5 em Campo conecta tecnologia, geotecnologia, imagens aéreas e agronomia para transformar informações coletadas no campo em indicadores claros, úteis e estratégicos para o produtor rural.
+            </p>
+            <p>
+              Cada voo vira camadas de informação sobre o mesmo talhão. Juntas, elas mostram o que o olho não alcança do chão.
+            </p>
+
+            <ul class="pillars" id="pillars">
+              <li>
+                <button type="button" class="pillar" data-layer-target="drone" aria-pressed="false">
+                  <strong>Drone</strong>
+                  <span>Coleta de imagens aéreas e monitoramento da propriedade.</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="pillar" data-layer-target="imagem" aria-pressed="false">
+                  <strong>Imagem</strong>
+                  <span>Registro visual da área em alta resolução, foto a foto.</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="pillar" data-layer-target="geo" aria-pressed="false">
+                  <strong>Geotecnologia</strong>
+                  <span>Mapeamento preciso, limites dos talhões e análise espacial.</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="pillar" data-layer-target="agro" aria-pressed="false">
+                  <strong>Agronomia</strong>
+                  <span>Interpretação técnica do vigor e dos pontos de atenção.</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="stack-wrap" aria-hidden="true">
+            <div class="stack" id="layerStack">
+              <div class="plane plane-imagem" data-layer="imagem"><img alt="" id="planeNatural" /><span class="plane-tag">Imagem aérea</span></div>
+              <div class="plane plane-geo" data-layer="geo"><svg viewBox="0 0 640 480" id="planeGeo"></svg><span class="plane-tag">Limites e grade</span></div>
+              <div class="plane plane-agro" data-layer="agro"><img alt="" id="planeNdvi" /><svg viewBox="0 0 640 480" id="planeAgro"></svg><span class="plane-tag">Mapa de vigor</span></div>
+              <div class="plane plane-drone" data-layer="drone"><svg viewBox="0 0 640 480" id="planeDrone"></svg></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section services" id="servicos" aria-labelledby="servicosTitle">
+        <div class="container services-grid">
+          <div class="services-intro">
+            <h2 id="servicosTitle">Atuação completa para o agronegócio</h2>
+            <p>Do voo ao relatório, cada serviço termina numa entrega que o produtor usa na próxima decisão.</p>
+          </div>
+
+          <ul class="service-list">
+            <li class="service">
+              <svg class="service-icon" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="15" y="16" width="10" height="8" rx="2.5"/><path d="M15 17 10 12M25 17l5-5M15 23l-5 5M25 23l5 5"/><circle cx="9" cy="11" r="4.2"/><circle cx="31" cy="11" r="4.2"/><circle cx="9" cy="29" r="4.2"/><circle cx="31" cy="29" r="4.2"/></g></svg>
+              <div>
+                <h3>Monitoramento com drone</h3>
+                <p>Voos programados sobre a propriedade para encontrar pontos de atenção e acompanhar as áreas de interesse.</p>
+              </div>
+              <span class="deliverable">Ortomosaico e mapa de vigor</span>
+            </li>
+            <li class="service">
+              <svg class="service-icon" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12 15 8l10 4 9-4v20l-9 4-10-4-9 4z"/><path d="M15 8v20M25 12v20"/><path d="M20 22.5c-2.2-2.4-3.4-4.2-3.4-5.6a3.4 3.4 0 0 1 6.8 0c0 1.4-1.2 3.2-3.4 5.6Z" fill="currentColor" fill-opacity=".18"/></g></svg>
+              <div>
+                <h3>Geotecnologia e mapeamento</h3>
+                <p>Limites dos talhões, áreas e perímetros organizados num mapa da propriedade que facilita a análise.</p>
+              </div>
+              <span class="deliverable">Limites em GeoJSON</span>
+            </li>
+            <li class="service">
+              <svg class="service-icon" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 34V19"/><path d="M20 22c0-6 4-10 11-10 0 7-4 10-11 10Z"/><path d="M20 26c0-5-3.4-8.4-10-8.4 0 5.6 3.4 8.4 10 8.4Z"/><path d="M12 34h16"/></g></svg>
+              <div>
+                <h3>Acompanhamento agronômico</h3>
+                <p>Interpretação dos dados coletados por quem conhece a cultura, com foco no que a propriedade precisa.</p>
+              </div>
+              <span class="deliverable">Recomendação por talhão</span>
+            </li>
+            <li class="service">
+              <svg class="service-icon" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h13l7 7v23H11z"/><path d="M24 5v7h7"/><path d="M16 29v-5M21 29v-9M26 29v-6"/></g></svg>
+              <div>
+                <h3>Relatórios técnicos</h3>
+                <p>Dados transformados em relatórios claros e visuais, prontos para a tomada de decisão.</p>
+              </div>
+              <span class="deliverable">Relatório em PDF</span>
+            </li>
+            <li class="service">
+              <svg class="service-icon" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a3 3 0 0 1 3-3h4l2.4-3.5h9.2L27 11h4a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z"/><circle cx="20" cy="21" r="6.5"/><path d="M20 14.5 23 21M26.2 19.4l-6.5 2.6M23.6 26.4 18 22"/></g></svg>
+              <div>
+                <h3>Fotografia e vídeos rurais</h3>
+                <p>Imagens e vídeos aéreos profissionais para documentar a safra e apresentar a propriedade.</p>
+              </div>
+              <span class="deliverable">Fotos e vídeos em 4K</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section process" id="como-funciona" aria-labelledby="processoTitle">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="processoTitle">Como transformamos dados em decisões</h2>
+            <p>Oito etapas, do primeiro contato à entrega. O caminho segue o mesmo vai e volta que o drone faz sobre a lavoura.</p>
+          </div>
+
+          <div class="route" id="processRoute">
+            <svg class="route-path" aria-hidden="true"><path class="route-track" /><path class="route-progress" /></svg>
+            <ol class="route-steps">
+              <li class="step"><span class="step-dot num">1</span><h3>Contato</h3><p>Entendemos a necessidade da propriedade e o seu objetivo.</p></li>
+              <li class="step"><span class="step-dot num">2</span><h3>Diagnóstico</h3><p>Definimos o escopo e a melhor forma de monitoramento.</p></li>
+              <li class="step"><span class="step-dot num">3</span><h3>Visita técnica</h3><p>Reconhecemos a área, o contexto e os principais pontos de atenção.</p></li>
+              <li class="step"><span class="step-dot num">4</span><h3>Voo com drone</h3><p>Coletamos as imagens e os dados geoespaciais.</p></li>
+              <li class="step"><span class="step-dot num">5</span><h3>Processamento</h3><p>Organizamos e transformamos as informações em indicadores.</p></li>
+              <li class="step"><span class="step-dot num">6</span><h3>Interpretação agronômica</h3><p>Relacionamos os dados com a realidade da cultura e da área.</p></li>
+              <li class="step"><span class="step-dot num">7</span><h3>Relatório</h3><p>Apresentamos evidências, análise e recomendações em linguagem clara.</p></li>
+              <li class="step"><span class="step-dot num">8</span><h3>Entrega ao produtor</h3><p>Sua equipe recebe dados que ajudam a decidir com mais segurança.</p></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section demo" id="demonstracao" aria-labelledby="demoTitle">
+        <div class="container">
+          <div class="section-head section-head-split">
+            <h2 id="demoTitle">Veja o campo de uma nova perspectiva</h2>
+            <p>Lavouras reais a leste de Campo Novo do Parecis. Arraste a divisória para comparar a imagem de satélite com o índice de vigor calculado a partir dela, aqui no seu navegador.</p>
+          </div>
+
+          <div class="compare" id="compare" style="--split: 50%">
+            <canvas class="compare-layer compare-rgb" id="compareRgb" aria-hidden="true"></canvas>
+            <canvas class="compare-layer compare-index" id="compareIndex" aria-hidden="true"></canvas>
+            <svg class="compare-overlay" id="compareOverlay" aria-hidden="true"></svg>
+            <div class="compare-handle" aria-hidden="true"><span></span></div>
+            <span class="compare-tag compare-tag-left">Satélite</span>
+            <span class="compare-tag compare-tag-right">Índice de vigor</span>
+            <div class="compare-loading" id="compareLoading"><span class="spinner-dark" aria-hidden="true"></span>Carregando imagem de satélite</div>
+            <label class="visually-hidden" for="compareRange">Posição da divisória entre satélite e índice de vigor</label>
+            <input class="compare-range" id="compareRange" type="range" min="0" max="100" value="50" />
+          </div>
+
+          <div class="demo-foot">
+            <div class="ndvi-legend ndvi-legend-light">
+              <span class="ndvi-bar" aria-hidden="true"></span>
+              <span class="ndvi-ends"><span>vigor baixo</span><span>alto</span></span>
+            </div>
+            <ul class="demo-facts" id="demoFacts">
+              <li><strong class="num">4</strong> talhões na imagem</li>
+              <li><strong class="num">370 ha</strong> analisados</li>
+              <li><strong class="num">5</strong> pontos de atenção marcados</li>
+            </ul>
+            <p class="demo-credit" id="demoCredit">Imagem: Esri World Imagery. Índice VARI calculado a partir das bandas visíveis.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section team" id="equipe" aria-labelledby="equipeTitle">
+        <div class="container team-grid">
+          <div class="team-copy">
+            <h2 id="equipeTitle">Nossa equipe</h2>
+            <p>Profissionais que unem tecnologia, campo e informação para transformar dados em decisões.</p>
+            <div class="team-controls">
+              <button class="round-btn" type="button" id="teamPrev" aria-label="Foto anterior">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="team-count num" id="teamCount" aria-live="polite">1 de 6</span>
+              <button class="round-btn" type="button" id="teamNext" aria-label="Próxima foto">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="team-stage" id="teamStage" tabindex="0" aria-roledescription="carrossel" aria-label="Fotos da equipe G5 em Campo">
+            <figure class="team-slide is-active"><img src="assets/equipe-g5-01.jpg" alt="Integrante da equipe G5 em Campo numa lavoura ao pôr do sol" /></figure>
+            <figure class="team-slide"><img src="assets/equipe-g5-02.jpg" alt="Integrante da equipe G5 em Campo numa lavoura" loading="lazy" /></figure>
+            <figure class="team-slide"><img src="assets/equipe-g5-03.jpg" alt="Integrante da equipe G5 em Campo com a lavoura ao fundo" loading="lazy" /></figure>
+            <figure class="team-slide"><img src="assets/equipe-g5-04.jpg" alt="Integrante da equipe G5 em Campo de uniforme numa lavoura de soja ao pôr do sol" loading="lazy" /></figure>
+            <figure class="team-slide"><img src="assets/equipe-g5-05.jpg" alt="Equipe G5 em Campo reunida na lavoura" loading="lazy" /></figure>
+            <figure class="team-slide"><img src="assets/equipe-g5-06.jpeg" alt="Integrante da equipe G5 em Campo numa lavoura ao pôr do sol" loading="lazy" /></figure>
+            <div class="team-progress" aria-hidden="true"><span id="teamProgress"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section diagnosis" id="diagnostico" aria-labelledby="diagnosticoTitle">
+        <div class="container diagnosis-grid">
+          <div class="diagnosis-copy">
+            <h2 id="diagnosticoTitle">Conte um pouco sobre sua propriedade</h2>
+            <p>Descubra como a G5 em Campo pode ajudar. Transforme informação em decisão com uma análise técnica e visual da sua área.</p>
+            <dl class="diagnosis-facts">
+              <div><dt>Você recebe</dt><dd>uma análise técnica e visual da sua área</dd></div>
+              <div><dt>Retorno</dt><dd>pelo WhatsApp que você informar</dd></div>
+            </dl>
+          </div>
+
+          <div class="diagnosis-card">
+            <form class="diagnosis-form" id="diagnosisForm" novalidate>
+              <div class="form-row">
+                <label class="field">
+                  <span>Nome</span>
+                  <input class="input" type="text" name="name" autocomplete="name" placeholder="Seu nome" required />
+                  <small class="field-error" data-error-for="name"></small>
+                </label>
+                <label class="field">
+                  <span>WhatsApp</span>
+                  <input class="input" type="tel" name="whatsapp" autocomplete="tel" inputmode="numeric" placeholder="(65) 99999-9999" required />
+                  <small class="field-error" data-error-for="whatsapp"></small>
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="field">
+                  <span>Localização da propriedade</span>
+                  <input class="input" type="text" name="location" placeholder="Cidade e estado" required />
+                  <small class="field-error" data-error-for="location"></small>
+                </label>
+                <label class="field">
+                  <span>Tamanho da área</span>
+                  <input class="input" type="text" name="area" placeholder="Ex.: 250 ha" required />
+                  <small class="field-error" data-error-for="area"></small>
+                </label>
+              </div>
+              <label class="field">
+                <span>Serviço de interesse</span>
+                <select class="input" name="service" required>
+                  <option value="">Selecione</option>
+                  <option>Monitoramento com drone</option>
+                  <option>Geotecnologia e mapeamento</option>
+                  <option>Acompanhamento agronômico</option>
+                  <option>Relatórios técnicos</option>
+                  <option>Fotografia e vídeos rurais</option>
+                </select>
+                <small class="field-error" data-error-for="service"></small>
+              </label>
+              <button class="btn btn-block" type="submit">Solicitar diagnóstico</button>
+            </form>
+
+            <div class="diagnosis-success" id="diagnosisSuccess" hidden tabindex="-1">
+              <svg class="success-check" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" /><path d="m19 33 9 9 18-19" /></svg>
+              <h3>Solicitação enviada</h3>
+              <p id="diagnosisSummary">Vamos entrar em contato pelo WhatsApp informado.</p>
+              <button class="btn btn-outline btn-small" type="button" id="diagnosisAgain">Enviar outra solicitação</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section contact" id="contato" aria-labelledby="contatoTitle">
+        <div class="container">
+          <h2 id="contatoTitle">Vamos transformar informações do campo em decisões melhores?</h2>
+          <div class="contact-grid">
+            <a class="contact-item contact-instagram" href="https://www.instagram.com/g5emcampo?stkn=MTZsZDE4NTZycHJ3ZQ==" target="_blank" rel="noreferrer">
+              <span class="contact-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" /></svg>
+                Instagram
+              </span>
+              <strong>@g5emcampo</strong>
+              <img class="contact-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;margin=0&amp;color=0f3a2d&amp;data=https%3A%2F%2Fwww.instagram.com%2Fg5emcampo" alt="QR Code para abrir o Instagram da G5 em Campo" loading="lazy" width="120" height="120" />
+              <small>Aponte a câmera para abrir o perfil</small>
+            </a>
+            <a class="contact-item" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">
+              <span class="contact-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 11.5a8.2 8.2 0 0 1-12.1 7.2L3.7 20l1.3-4.2a8.2 8.2 0 1 1 15.2-4.3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /><path d="M8.3 8.2c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.6 1.4c.1.3.1.5-.1.7l-.5.6c.6 1.1 1.5 1.9 2.6 2.4l.5-.6c.2-.2.4-.3.7-.2l1.4.6c.3.1.4.3.4.6v.5c0 .3-.1.5-.4.7-.5.3-1.1.4-1.7.2-2.7-.8-4.8-2.9-5.9-5.5-.2-.5-.1-1 .1-1.4l.6-1.1Z" fill="currentColor" /></svg>
+                WhatsApp
+              </span>
+              <strong>Falar com a G5</strong>
+              <small>Iniciar conversa</small>
+            </a>
+            <a class="contact-item" href="mailto:g5emcampo@gmail.com">
+              <span class="contact-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="m4.5 7 7.5 6 7.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                E-mail
+              </span>
+              <strong>g5emcampo@gmail.com</strong>
+              <small>Enviar mensagem</small>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <strong>G5 em Campo</strong>
+          <span>Tecnologia que transforma informação em decisão.</span>
+        </div>
+        <nav class="footer-nav" aria-label="Rodapé">
+          <a href="#sobre">Sobre</a>
+          <a href="#servicos">Serviços</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#diagnostico">Diagnóstico</a>
+          <a href="app.html">Painel</a>
+        </nav>
+        <p>© 2026 G5 em Campo. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+    <script src="js/data.js?v=7" defer></script>
+    <script src="js/geo.js?v=7" defer></script>
+    <script src="js/ui.js?v=7" defer></script>
+    <script src="js/field-scene.js?v=7" defer></script>
+    <script src="js/landing.js?v=7" defer></script>
+  </body>
+</html>
