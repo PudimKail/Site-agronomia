@@ -542,8 +542,7 @@ window.G5 = window.G5 || {};
       svg('circle', { cx: spot.x, cy: spot.y, r: 7, class: 'agro-dot' }, spots);
     });
 
-    const route = svg('path', { d: routePath(), class: 'drone-plane-route' }, droneSvg);
-    route.setAttribute('pathLength', 100);
+    svg('path', { d: routePath(), class: 'drone-plane-route' }, droneSvg);
     const drone = droneGroup(droneSvg);
     drone.group.setAttribute('transform', 'translate(380 228) scale(2.2)');
     drone.body.setAttribute('transform', 'rotate(-30)');

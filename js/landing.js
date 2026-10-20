@@ -170,10 +170,11 @@
     mountStackOnce();
     observer.disconnect();
   }, { rootMargin: '600px 0px' }).observe(stackWrap);
+  setTimeout(mountStackOnce, 3500);
 
   if (canAnimate && ScrollTrigger) {
     gsap.fromTo(stack, { '--gap': '6px', '--rx': '64deg', '--rz': '-40deg' }, {
-      '--gap': '72px',
+      '--gap': '60px',
       '--rx': '55deg',
       '--rz': '-32deg',
       ease: 'none',
@@ -232,14 +233,17 @@
       return { x: dot.left + dot.width / 2 - box.left, y: dot.top + dot.height / 2 - box.top };
     });
     const multiColumn = centers.some((point, index) => index > 0 && Math.abs(point.y - centers[index - 1].y) < 4);
-    const room = Math.max(24, Math.min(80, window.innerWidth - box.right - 8));
     let d = `M${centers[0].x} ${centers[0].y}`;
     for (let index = 1; index < centers.length; index += 1) {
       const from = centers[index - 1];
       const to = centers[index];
       if (multiColumn && Math.abs(from.x - to.x) < 4) {
-        const bulge = (from.x > box.width / 2 ? 1 : -1) * Math.min(room + 24, Math.max(56, (to.y - from.y) * 0.45));
-        d += ` C${from.x + bulge} ${from.y} ${to.x + bulge} ${to.y} ${to.x} ${to.y}`;
+        // Retorno em "U" pela borda da grade, como o drone no fim de uma faixa
+        const edge = from.x > box.width / 2 ? box.width - 4 : 4;
+        const sign = edge > from.x ? 1 : -1;
+        const radius = Math.min(28, (to.y - from.y) / 2);
+        d += ` L${edge - sign * radius} ${from.y} Q${edge} ${from.y} ${edge} ${from.y + radius}`
+          + ` L${edge} ${to.y - radius} Q${edge} ${to.y} ${edge - sign * radius} ${to.y} L${to.x} ${to.y}`;
       } else {
         d += ` L${to.x} ${to.y}`;
       }
@@ -485,7 +489,7 @@
       slide.style.setProperty('--offset', offset);
       slide.style.setProperty('--abs', Math.abs(offset));
       slide.classList.toggle('is-active', offset === 0);
-      slide.classList.toggle('is-far', Math.abs(offset) > 2);
+      slide.classList.toggle('is-far', Math.abs(offset) > 1);
       slide.setAttribute('aria-hidden', String(offset !== 0));
     });
     teamCount.textContent = `${activeSlide + 1} de ${total}`;

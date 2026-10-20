@@ -6,6 +6,10 @@
   }
 }
 
+body.landing {
+  overflow-x: clip;
+}
+
 .container {
   width: min(1200px, 100% - 32px);
   margin-inline: auto;
@@ -472,13 +476,6 @@
   gap: 6px;
 }
 
-.ndvi-bar {
-  display: block;
-  height: 8px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--ndvi-0), var(--ndvi-1), var(--ndvi-2), var(--ndvi-3), var(--ndvi-4), var(--ndvi-5));
-}
-
 .ndvi-ends {
   display: flex;
   justify-content: space-between;
@@ -780,7 +777,8 @@
   fill: none;
   stroke: var(--amber-400);
   stroke-width: 3;
-  stroke-dasharray: 2 2.2;
+  stroke-dasharray: 10 9;
+  opacity: 0.9;
 }
 
 /* Serviços */
@@ -1286,8 +1284,8 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--field-100);
-  transform: translateX(calc(var(--offset) * 58%)) scale(calc(1 - var(--abs) * 0.14)) rotate(calc(var(--offset) * 2deg));
-  opacity: calc(1 - var(--abs) * 0.38);
+  transform: translateX(calc(var(--offset) * 56%)) scale(calc(1 - var(--abs) * 0.14)) rotate(calc(var(--offset) * 2deg));
+  opacity: calc(1 - var(--abs) * 0.3);
   z-index: calc(10 - var(--abs));
   transition: transform 0.8s var(--ease-out), opacity 0.8s var(--ease-out), filter 0.8s;
   cursor: pointer;

@@ -169,7 +169,7 @@ window.G5 = window.G5 || {};
         plantedAt: input.plantedAt || null,
         stage: input.stage || 'Planejamento',
         moisture: null,
-        status: 'idle',
+        status: 'new',
         yieldEstimate: null,
         yieldTarget: null,
         polygon: input.polygon,

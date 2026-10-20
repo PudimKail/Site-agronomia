@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel | G5 em Campo</title>
+    <meta name="description" content="Painel de talhões da G5 em Campo: vigor, alertas, editor de talhão e planejamento de voo com drone." />
+    <meta name="theme-color" content="#0a2c22" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.18.0/dist/leaflet-geoman.css" />
+    <link rel="stylesheet" href="css/base.css?v=7" />
+    <link rel="stylesheet" href="css/app.css?v=7" />
+  </head>
+  <body class="app is-locked">
+    <!-- Entrada -->
+    <div class="login" id="login">
+      <div class="login-art" aria-hidden="true"><img id="loginArt" alt="" /></div>
+      <div class="login-card" id="loginCard">
+        <a class="brand" href="index.html" aria-label="Voltar ao site da G5 em Campo">
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <rect width="48" height="48" rx="13" fill="#164b3a" />
+            <path d="M17.5 11.5h13M20 11.5l1.6 2.6h4.8l1.6-2.6" fill="none" stroke="#eef4ea" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="24" y="32" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="18" style="font-stretch: 125%"><tspan fill="#eef4ea">G</tspan><tspan fill="#c3e36b">5</tspan></text>
+            <path d="M11 39.5c4.5-3.4 21.5-3.4 26 0M15 42.5c3.4-2 14.6-2 18 0" fill="none" stroke="#c3e36b" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <span class="brand-name"><strong>G5 em Campo</strong><span>Gestão agrícola</span></span>
+        </a>
+        <h1>Entrar no painel</h1>
+        <p class="login-lead">Acompanhe o vigor, os alertas e os voos dos talhões da Fazenda Campo Novo.</p>
+        <form class="login-form" id="loginForm" novalidate>
+          <label class="field">
+            <span>Usuário</span>
+            <input class="input" id="loginUser" name="username" autocomplete="username" value="admin" required />
+          </label>
+          <label class="field">
+            <span>Senha</span>
+            <input class="input" id="loginPassword" name="password" type="password" autocomplete="current-password" value="123456" required />
+          </label>
+          <p class="login-error" id="loginError" role="alert"></p>
+          <button class="btn btn-block" type="submit" id="loginSubmit">Entrar</button>
+        </form>
+        <p class="login-demo">Acesso de demonstração já preenchido: <strong>admin</strong> e senha <strong>123456</strong>.</p>
+        <a class="login-back" href="index.html">Voltar ao site</a>
+      </div>
+    </div>
+
+    <!-- Painel -->
+    <div class="shell" id="shell" hidden>
+      <aside class="rail" aria-label="Menu do painel">
+        <a class="brand rail-brand" href="index.html" aria-label="G5 em Campo, voltar ao site">
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <rect width="48" height="48" rx="13" fill="#164b3a" />
+            <path d="M17.5 11.5h13M20 11.5l1.6 2.6h4.8l1.6-2.6" fill="none" stroke="#eef4ea" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="24" y="32" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="18" style="font-stretch: 125%"><tspan fill="#eef4ea">G</tspan><tspan fill="#c3e36b">5</tspan></text>
+            <path d="M11 39.5c4.5-3.4 21.5-3.4 26 0M15 42.5c3.4-2 14.6-2 18 0" fill="none" stroke="#c3e36b" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <span class="brand-name"><strong>G5 em Campo</strong><span>Gestão agrícola</span></span>
+        </a>
+
+        <nav class="rail-nav" id="railNav">
+          <span class="rail-indicator" aria-hidden="true"></span>
+          <a href="#visao" data-view-link="visao">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z" /></svg>
+            <span>Visão geral</span>
+          </a>
+          <a href="#talhoes" data-view-link="talhoes">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5 9 4l6 3 5.5-3v12.5L15 20l-6-3-5.5 3.5z" /><path d="M9 4v13M15 7v13" /></svg>
+            <span>Talhões</span>
+          </a>
+          <a href="#monitoramento" data-view-link="monitoramento">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+            <span>Monitoramento</span>
+            <b class="rail-count num" id="railAlerts" aria-label="alertas abertos"></b>
+          </a>
+          <a href="#analitica" data-view-link="analitica">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+            <span>Analítica</span>
+          </a>
+        </nav>
+
+        <div class="rail-foot">
+          <div class="season">
+            <span>Safra atual</span>
+            <strong>2026/27</strong>
+            <small>Soja e milho</small>
+          </div>
+          <button class="rail-action" type="button" id="resetDemo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /></svg>
+            Restaurar dados de demonstração
+          </button>
+          <button class="rail-action" type="button" id="logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" /></svg>
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div class="topbar-title">
+            <h1 id="viewTitle">Visão geral</h1>
+            <p>Fazenda Campo Novo, Campo Novo do Parecis (MT). Safra 2026/27.</p>
+          </div>
+          <div class="topbar-right">
+            <div class="weather-chip" id="weatherChip" aria-live="polite">
+              <span class="skeleton skeleton-text">Clima</span>
+            </div>
+            <div class="user-chip">
+              <span class="avatar" aria-hidden="true" id="userInitial">A</span>
+              <span class="user-text"><strong id="userName">Admin</strong><small id="userRole">Gestor da fazenda</small></span>
+            </div>
+          </div>
+        </header>
+
+        <main class="views" id="views">
+          <!-- Visão geral -->
+          <section class="view view-overview" data-view="visao" aria-labelledby="viewTitle" hidden>
+            <div class="greeting">
+              <h2 id="greeting">Bom dia</h2>
+              <p id="todayLabel"></p>
+            </div>
+
+            <div class="kpis" id="kpis">
+              <article class="kpi" style="--i: 0">
+                <span class="kpi-label">Área monitorada</span>
+                <strong class="kpi-value num" id="kpiArea">–</strong>
+                <small id="kpiAreaNote">&nbsp;</small>
+              </article>
+              <article class="kpi" style="--i: 1">
+                <span class="kpi-label">Vigor médio (NDVI)</span>
+                <strong class="kpi-value num" id="kpiNdvi">–</strong>
+                <small id="kpiNdviNote">&nbsp;</small>
+              </article>
+              <article class="kpi" style="--i: 2">
+                <span class="kpi-label">Talhões que pedem ação</span>
+                <strong class="kpi-value num" id="kpiAction">–</strong>
+                <small id="kpiActionNote">&nbsp;</small>
+              </article>
+              <article class="kpi" style="--i: 3">
+                <span class="kpi-label">Alertas abertos</span>
+                <strong class="kpi-value num" id="kpiAlerts">–</strong>
+                <small id="kpiAlertsNote">&nbsp;</small>
+              </article>
+            </div>
+
+            <div class="overview-grid">
+              <article class="panel panel-ndvi" style="--i: 4" aria-labelledby="ndviTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="ndviTitle">Vigor por talhão</h3>
+                    <p>NDVI semanal desde agosto. Quanto mais alto, mais vigorosa a lavoura.</p>
+                  </div>
+                  <button class="link-btn" type="button" data-table-toggle="ndviChart" aria-expanded="false">Ver tabela</button>
+                </header>
+                <div class="chart-legend" id="ndviLegend"></div>
+                <div class="chart" id="ndviChart"></div>
+              </article>
+
+              <article class="panel panel-weather" style="--i: 5" aria-labelledby="weatherTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="weatherTitle">Clima na fazenda</h3>
+                    <p id="weatherSource">Consultando a previsão</p>
+                  </div>
+                  <button class="icon-btn" type="button" id="weatherRefresh" aria-label="Atualizar clima">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v4h-4" /></svg>
+                  </button>
+                </header>
+                <div class="weather-now" id="weatherNow">
+                  <div class="skeleton skeleton-block"></div>
+                </div>
+                <ol class="forecast" id="forecast"></ol>
+              </article>
+
+              <article class="panel panel-fields" style="--i: 6" aria-labelledby="fieldsTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="fieldsTitle">Talhões</h3>
+                    <p>Clique num talhão para abrir no editor.</p>
+                  </div>
+                  <a class="link-btn" href="#talhoes">Abrir editor</a>
+                </header>
+                <div class="table-scroll">
+                  <table class="data-table" id="fieldsTable">
+                    <thead>
+                      <tr><th scope="col">Talhão</th><th scope="col">Cultura</th><th scope="col" class="num-col">Área</th><th scope="col">Vigor</th><th scope="col">Estádio</th><th scope="col">Situação</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </article>
+
+              <article class="panel panel-alerts" style="--i: 7" aria-labelledby="alertsTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="alertsTitle">Alertas recentes</h3>
+                    <p>Pontos de atenção encontrados nos últimos voos.</p>
+                  </div>
+                  <a class="link-btn" href="#monitoramento">Ver todos</a>
+                </header>
+                <ul class="alert-feed" id="alertFeed"></ul>
+              </article>
+            </div>
+          </section>
+
+          <!-- Editor de talhão -->
+          <section class="view view-editor" data-view="talhoes" aria-labelledby="viewTitle" hidden>
+            <div class="editor" id="editor">
+              <div class="editor-toolbar" role="toolbar" aria-label="Ferramentas do editor">
+                <div class="tool-group" id="toolGroup">
+                  <button class="tool" type="button" data-tool="select" aria-pressed="true" title="Selecionar (V)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 14 8-6 1.6L10 19z" /></svg><span>Selecionar</span>
+                  </button>
+                  <button class="tool" type="button" data-tool="draw" aria-pressed="false" title="Desenhar talhão (P)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18 8 6l10 3-2 9z" /><circle cx="5" cy="18" r="1.6" /><circle cx="8" cy="6" r="1.6" /><circle cx="18" cy="9" r="1.6" /><circle cx="16" cy="18" r="1.6" /></svg><span>Desenhar</span>
+                  </button>
+                  <button class="tool" type="button" data-tool="vertices" aria-pressed="false" title="Editar vértices (E)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17 9 6l9 4-3 8z" stroke-dasharray="2 2.4" /><rect x="7" y="4" width="4" height="4" rx="1" /><rect x="16" y="8" width="4" height="4" rx="1" /><rect x="3" y="15" width="4" height="4" rx="1" /></svg><span>Vértices</span>
+                  </button>
+                  <button class="tool" type="button" data-tool="move" aria-pressed="false" title="Mover talhão (G)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" /></svg><span>Mover</span>
+                  </button>
+                  <button class="tool" type="button" data-tool="measure" aria-pressed="false" title="Medir distância (M)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 16 13-13 5 5L8 21z" /><path d="m7 12 2 2M10 9l2 2M13 6l2 2" /></svg><span>Medir</span>
+                  </button>
+                </div>
+                <div class="tool-group">
+                  <button class="tool tool-icon" type="button" id="undoBtn" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5" /><path d="M4 9h10a6 6 0 0 1 0 12h-3" /></svg>
+                  </button>
+                  <button class="tool tool-icon" type="button" id="redoBtn" title="Refazer (Ctrl+Shift+Z)" aria-label="Refazer" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5" /><path d="M20 9H10a6 6 0 0 0 0 12h3" /></svg>
+                  </button>
+                </div>
+                <div class="tool-group tool-group-end">
+                  <button class="tool" type="button" id="basemapBtn" aria-pressed="true" title="Alternar satélite e mapa">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.4 2.4 3.4 5.2 3.4 8.5s-1 6.1-3.4 8.5M12 3.5C9.6 5.9 8.6 8.7 8.6 12s1 6.1 3.4 8.5" /></svg><span id="basemapLabel">Satélite</span>
+                  </button>
+                  <button class="tool" type="button" id="layersBtn" aria-expanded="false" aria-controls="layerPanel">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 9 5-9 5-9-5z" /><path d="m3 14 9 5 9-5" /></svg><span>Camadas</span>
+                  </button>
+                  <button class="tool tool-icon" type="button" id="fitBtn" title="Enquadrar talhão selecionado" aria-label="Enquadrar talhão selecionado">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /><rect x="9" y="9" width="6" height="6" rx="1" /></svg>
+                  </button>
+                  <button class="tool tool-icon" type="button" id="expandBtn" title="Expandir mapa" aria-label="Expandir mapa" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" /></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="editor-body">
+                <div class="map-wrap">
+                  <div class="map" id="editorMap" aria-label="Mapa dos talhões da fazenda" role="application"></div>
+                  <div class="map-hint" id="mapHint" aria-live="polite">Clique num talhão para selecionar.</div>
+
+                  <div class="map-panel layer-panel" id="layerPanel" hidden>
+                    <div class="map-panel-head"><strong>Camadas</strong><button class="icon-btn small" type="button" id="layersClose" aria-label="Fechar camadas"></button></div>
+                    <label class="switch"><input type="checkbox" data-layer="fields" checked /><span>Talhões</span></label>
+                    <label class="switch"><input type="checkbox" data-layer="labels" checked /><span>Nomes dos talhões</span></label>
+                    <label class="switch"><input type="checkbox" data-layer="route" checked /><span>Rota de voo</span></label>
+                    <label class="switch"><input type="checkbox" data-layer="marks" checked /><span>Ponto de decolagem e áreas altas</span></label>
+                    <label class="switch"><input type="checkbox" data-layer="rain" /><span>Chance de chuva</span></label>
+                    <label class="switch"><input type="checkbox" data-layer="wind" /><span>Vento agora</span></label>
+                  </div>
+
+                  <div class="map-panel flight-hud" id="flightHud" hidden>
+                    <div class="flight-hud-top">
+                      <strong>Simulação de voo</strong>
+                      <span class="num" id="flightPercent">0%</span>
+                    </div>
+                    <div class="flight-bar"><span id="flightBar"></span></div>
+                    <p class="num" id="flightInfo">Decolando</p>
+                    <div class="flight-hud-actions">
+                      <button class="btn btn-small btn-outline" type="button" id="flightPause">Pausar</button>
+                      <button class="btn btn-small btn-outline" type="button" id="flightStop">Encerrar</button>
+                    </div>
+                  </div>
+
+                  <div class="map-legend" id="weatherLegend" hidden>
+                    <span><i class="legend-rain"></i>Chance de chuva hoje</span>
+                    <span><i class="legend-wind"></i>Direção do vento</span>
+                  </div>
+                </div>
+
+                <aside class="editor-side" aria-label="Detalhes do talhão">
+                  <div class="field-picker">
+                    <div class="field-picker-head">
+                      <h2>Talhões da fazenda</h2>
+                      <button class="link-btn" type="button" id="newFieldBtn">Desenhar novo</button>
+                    </div>
+                    <ul class="field-chips" id="fieldChips"></ul>
+                  </div>
+
+                  <div class="field-detail" id="fieldDetail">
+                    <div class="detail-head">
+                      <div>
+                        <h2 id="detailName">Talhão</h2>
+                        <p id="detailMeta"></p>
+                      </div>
+                      <div id="detailStatus"></div>
+                    </div>
+                    <p class="unsaved" id="unsaved" hidden><i aria-hidden="true"></i>Alterações não salvas</p>
+
+                    <div class="tabs" role="tablist" aria-label="Detalhes do talhão" id="detailTabs">
+                      <button role="tab" type="button" id="tab-info" aria-controls="panel-info" aria-selected="true">Informações</button>
+                      <button role="tab" type="button" id="tab-geo" aria-controls="panel-geo" aria-selected="false" tabindex="-1">Geometria</button>
+                      <button role="tab" type="button" id="tab-flight" aria-controls="panel-flight" aria-selected="false" tabindex="-1">Voo</button>
+                      <span class="tab-indicator" aria-hidden="true"></span>
+                    </div>
+
+                    <div class="tab-panel" role="tabpanel" id="panel-info" aria-labelledby="tab-info">
+                      <label class="field">
+                        <span>Nome do talhão</span>
+                        <input class="input" id="fieldName" maxlength="40" />
+                        <small class="field-error" id="fieldNameError"></small>
+                      </label>
+                      <div class="form-pair">
+                        <label class="field">
+                          <span>Cultura</span>
+                          <select class="input" id="fieldCulture">
+                            <option>Soja</option>
+                            <option>Milho</option>
+                            <option>Algodão</option>
+                            <option>Feijão</option>
+                            <option>Trigo</option>
+                            <option>Cana-de-açúcar</option>
+                            <option>Pousio</option>
+                            <option>Outra cultura</option>
+                          </select>
+                        </label>
+                        <label class="field">
+                          <span>Data de plantio</span>
+                          <input class="input" id="fieldPlanted" type="date" />
+                        </label>
+                      </div>
+
+                      <dl class="stat-pair">
+                        <div><dt>Área</dt><dd class="num" id="infoArea">–</dd></div>
+                        <div><dt>Vigor atual</dt><dd class="num" id="infoNdvi">–</dd></div>
+                        <div><dt>Umidade do solo</dt><dd class="num" id="infoMoisture">–</dd></div>
+                        <div><dt>Estádio</dt><dd id="infoStage">–</dd></div>
+                      </dl>
+
+                      <div class="planted">
+                        <div class="planted-head">
+                          <span>Quantidade plantada</span>
+                          <strong class="num" id="plantedValue">–</strong>
+                          <small id="plantedMode">Calculada pela área e pela densidade da cultura</small>
+                        </div>
+                        <div class="planted-edit">
+                          <label class="visually-hidden" for="plantedInput">Quantidade plantada manualmente</label>
+                          <input class="input" id="plantedInput" type="number" min="0" step="1000" inputmode="numeric" placeholder="Informar manualmente" />
+                          <button class="btn btn-small btn-outline" type="button" id="plantedApply">Aplicar</button>
+                          <button class="btn btn-small btn-outline" type="button" id="plantedAuto">Automático</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-panel" role="tabpanel" id="panel-geo" aria-labelledby="tab-geo" hidden>
+                      <dl class="stat-pair">
+                        <div><dt>Área</dt><dd class="num" id="geoArea">–</dd></div>
+                        <div><dt>Perímetro</dt><dd class="num" id="geoPerimeter">–</dd></div>
+                        <div><dt>Vértices</dt><dd class="num" id="geoVertices">–</dd></div>
+                        <div><dt>Centro</dt><dd class="num small" id="geoCenter">–</dd></div>
+                      </dl>
+                      <p class="help">Use a ferramenta Vértices para arrastar os pontos do limite. Clique com o botão direito num ponto para removê-lo.</p>
+                      <div class="table-scroll vertex-scroll">
+                        <table class="data-table compact" id="vertexTable">
+                          <thead><tr><th scope="col">Ponto</th><th scope="col">Latitude</th><th scope="col">Longitude</th></tr></thead>
+                          <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div class="tab-panel" role="tabpanel" id="panel-flight" aria-labelledby="tab-flight" hidden>
+                      <div class="range-field">
+                        <label for="flightAltitude">Altitude</label>
+                        <output class="num" id="flightAltitudeOut">80 m</output>
+                        <input type="range" id="flightAltitude" min="40" max="120" step="5" value="80" />
+                      </div>
+                      <div class="range-field">
+                        <label for="flightOverlap">Sobreposição lateral</label>
+                        <output class="num" id="flightOverlapOut">70%</output>
+                        <input type="range" id="flightOverlap" min="50" max="85" step="5" value="70" />
+                      </div>
+                      <div class="range-field">
+                        <label for="flightSpeed">Velocidade</label>
+                        <output class="num" id="flightSpeedOut">10 m/s</output>
+                        <input type="range" id="flightSpeed" min="4" max="15" step="1" value="10" />
+                      </div>
+                      <div class="range-field">
+                        <label for="flightHeading">Direção das faixas</label>
+                        <output class="num" id="flightHeadingOut">0°</output>
+                        <input type="range" id="flightHeading" min="0" max="175" step="5" value="0" />
+                      </div>
+                      <button class="link-btn" type="button" id="flightOptimize">Escolher a direção com menos curvas</button>
+
+                      <dl class="flight-summary" id="flightSummary">
+                        <div><dt>Faixas</dt><dd class="num" id="sumPasses">–</dd></div>
+                        <div><dt>Distância</dt><dd class="num" id="sumDistance">–</dd></div>
+                        <div><dt>Tempo de voo</dt><dd class="num" id="sumTime">–</dd></div>
+                        <div><dt>Fotos</dt><dd class="num" id="sumPhotos">–</dd></div>
+                        <div><dt>Baterias</dt><dd class="num" id="sumBatteries">–</dd></div>
+                        <div><dt>Resolução</dt><dd class="num" id="sumGsd">–</dd></div>
+                      </dl>
+                      <div class="flight-actions">
+                        <button class="btn btn-small btn-outline" type="button" id="routeBtn">Gerar rota</button>
+                        <button class="btn btn-small" type="button" id="simulateBtn" disabled>Simular voo</button>
+                      </div>
+                    </div>
+
+                    <div class="detail-actions">
+                      <button class="btn" type="button" id="saveBtn">Salvar alterações</button>
+                      <button class="btn btn-outline btn-danger" type="button" id="deleteBtn">Excluir talhão</button>
+                    </div>
+                  </div>
+                </aside>
+              </div>
+
+              <div class="editor-statusbar">
+                <p id="editorStatus" aria-live="polite">Editor pronto.</p>
+                <div class="status-actions">
+                  <button class="chip-btn" type="button" id="dronePointBtn" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></svg>Ponto de decolagem
+                  </button>
+                  <div class="chip-split" role="group" aria-label="Área alta para o drone">
+                    <button class="chip-btn" type="button" id="highAreaBtn" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 9 9l4 5 3-4 4 8z" /></svg>Área alta
+                    </button>
+                    <button class="chip-btn chip-shape" type="button" data-shape="square" aria-pressed="true" aria-label="Formato quadrado">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5" /></svg>
+                    </button>
+                    <button class="chip-btn chip-shape" type="button" data-shape="hexagon" aria-pressed="false" aria-label="Formato hexagonal">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 4v8l-7 4-7-4V8z" /></svg>
+                    </button>
+                  </div>
+                  <button class="chip-btn" type="button" id="clearMarksBtn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13" /></svg>Limpar marcações
+                  </button>
+                  <button class="chip-btn chip-strong" type="button" id="exportBtn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>Exportar GeoJSON
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Monitoramento -->
+          <section class="view view-monitor" data-view="monitoramento" aria-labelledby="viewTitle" hidden>
+            <div class="monitor">
+              <div class="map-wrap">
+                <div class="map" id="monitorMap" aria-label="Mapa de vigor e alertas" role="application"></div>
+                <div class="map-panel monitor-legend">
+                  <strong>Vigor (NDVI)</strong>
+                  <span class="ndvi-bar" aria-hidden="true"></span>
+                  <span class="ndvi-ends num"><span>0,1</span><span>0,5</span><span>0,9</span></span>
+                  <label class="switch"><input type="checkbox" id="ndviToggle" checked /><span>Mostrar mapa de vigor</span></label>
+                </div>
+              </div>
+              <aside class="monitor-side" aria-label="Lista de alertas">
+                <div class="monitor-side-head">
+                  <h2>Pontos de atenção</h2>
+                  <div class="filter" role="group" aria-label="Filtrar alertas" id="alertFilter">
+                    <button type="button" data-filter="open" aria-pressed="true">Abertos</button>
+                    <button type="button" data-filter="serious" aria-pressed="false">Graves</button>
+                    <button type="button" data-filter="resolved" aria-pressed="false">Resolvidos</button>
+                  </div>
+                </div>
+                <ul class="alert-list" id="alertList"></ul>
+              </aside>
+            </div>
+          </section>
+
+          <!-- Analítica -->
+          <section class="view view-analytics" data-view="analitica" aria-labelledby="viewTitle" hidden>
+            <div class="analytics-grid">
+              <article class="panel" style="--i: 0" aria-labelledby="yieldTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="yieldTitle">Produtividade estimada</h3>
+                    <p>Sacas por hectare, comparadas com a meta de cada cultura.</p>
+                  </div>
+                  <button class="link-btn" type="button" data-table-toggle="yieldChart" aria-expanded="false">Ver tabela</button>
+                </header>
+                <div class="chart" id="yieldChart"></div>
+              </article>
+
+              <article class="panel" style="--i: 1" aria-labelledby="rainTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="rainTitle">Chuva</h3>
+                    <p id="rainNote">Últimos 14 dias e previsão para 7 dias.</p>
+                  </div>
+                  <button class="link-btn" type="button" data-table-toggle="rainChart" aria-expanded="false">Ver tabela</button>
+                </header>
+                <div class="chart-legend">
+                  <span><i style="background: var(--rain-500)"></i>Chuva registrada</span>
+                  <span><i class="legend-forecast"></i>Previsão</span>
+                </div>
+                <div class="chart" id="rainChart"></div>
+              </article>
+
+              <article class="panel panel-wide" style="--i: 2" aria-labelledby="cropTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="cropTitle">Área por cultura</h3>
+                    <p>Distribuição dos hectares nesta safra.</p>
+                  </div>
+                </header>
+                <ul class="share-list" id="cropShare"></ul>
+              </article>
+
+              <article class="panel panel-wide" style="--i: 3" aria-labelledby="summaryTitle">
+                <header class="panel-head">
+                  <div>
+                    <h3 id="summaryTitle">Resumo da safra por talhão</h3>
+                    <p>Valores estimados a partir do vigor e do histórico da área.</p>
+                  </div>
+                </header>
+                <div class="table-scroll">
+                  <table class="data-table" id="summaryTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">Talhão</th><th scope="col">Cultura</th><th scope="col" class="num-col">Área</th><th scope="col">Plantio</th>
+                        <th scope="col" class="num-col">NDVI</th><th scope="col" class="num-col">Estimativa</th><th scope="col" class="num-col">Meta</th><th scope="col" class="num-col">Diferença</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <nav class="tabbar" aria-label="Menu do painel">
+        <a href="#visao" data-view-link="visao"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z" /></svg>Visão</a>
+        <a href="#talhoes" data-view-link="talhoes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5 9 4l6 3 5.5-3v12.5L15 20l-6-3-5.5 3.5z" /><path d="M9 4v13M15 7v13" /></svg>Talhões</a>
+        <a href="#monitoramento" data-view-link="monitoramento"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Alertas</a>
+        <a href="#analitica" data-view-link="analitica"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>Analítica</a>
+      </nav>
+    </div>
+
+    <dialog class="confirm" id="confirmDialog" aria-labelledby="confirmTitle">
+      <form method="dialog">
+        <h2 id="confirmTitle">Excluir talhão?</h2>
+        <p id="confirmText"></p>
+        <div class="confirm-actions">
+          <button class="btn btn-outline" value="cancel" type="submit">Cancelar</button>
+          <button class="btn btn-danger-fill" value="confirm" type="submit" id="confirmOk">Excluir</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.18.0/dist/leaflet-geoman.min.js" defer></script>
+    <script src="js/data.js?v=7" defer></script>
+    <script src="js/geo.js?v=7" defer></script>
+    <script src="js/ui.js?v=7" defer></script>
+    <script src="js/api.js?v=7" defer></script>
+    <script src="js/field-scene.js?v=7" defer></script>
+    <script src="js/charts.js?v=7" defer></script>
+    <script src="js/editor.js?v=7" defer></script>
+    <script src="js/monitor.js?v=7" defer></script>
+    <script src="js/app.js?v=7" defer></script>
+  </body>
+</html>

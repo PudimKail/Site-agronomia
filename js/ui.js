@@ -19,14 +19,15 @@ window.G5 = window.G5 || {};
     warning: 'Atenção',
     serious: 'Ação necessária',
     critical: 'Crítico',
-    idle: 'Sem cultura'
+    idle: 'Sem cultura',
+    new: 'Sem leitura'
   };
 
   const severityLabels = { warning: 'Atenção', serious: 'Grave', critical: 'Crítico' };
 
   function statusBadge(status, label) {
     const key = icons[status] ? status : 'idle';
-    return `<span class="status status-${key}">${icons[key]}${escapeHtml(label || statusLabels[key] || '')}</span>`;
+    return `<span class="status status-${key}">${icons[key]}${escapeHtml(label || statusLabels[status] || statusLabels[key] || '')}</span>`;
   }
 
   function escapeHtml(value) {

@@ -400,6 +400,14 @@ select.input {
 .status-critical svg { color: var(--status-critical); }
 .status-idle svg { color: var(--muted); }
 
+/* Escala de vigor */
+.ndvi-bar {
+  display: block;
+  height: 8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--ndvi-0), var(--ndvi-1), var(--ndvi-2), var(--ndvi-3), var(--ndvi-4), var(--ndvi-5));
+}
+
 /* Toasts */
 .toast-region {
   position: fixed;
